@@ -47,6 +47,7 @@ export default function AllWorkEntriesPage() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   if (loading) {
@@ -141,7 +142,7 @@ export default function AllWorkEntriesPage() {
           </div>
         )}
 
-        <WorkEntriesList entries={entries} />
+        <WorkEntriesList entries={entries} onUpdate={fetchData} />
       </div>
     </main>
   );

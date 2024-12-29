@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils";
-
 export function DashboardSkeleton() {
   return (
     <main className="min-h-screen p-4">
