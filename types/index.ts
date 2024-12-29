@@ -25,17 +25,12 @@ export interface User {
   route?: Route | null;
 }
 
-export interface RouteStop {
-  name: string;
-  address: string;
-}
-
 export interface Route {
   id: string;
   name: string;
   assignedUserId: string;
   description: string;
-  stops: RouteStop[];
+
   createdAt: string;
   updatedAt: string;
   updatedBy: string;

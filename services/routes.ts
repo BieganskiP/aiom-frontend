@@ -1,9 +1,8 @@
-import { Route, RouteStop } from "@/types";
+import { Route } from "@/types";
 
 interface CreateRouteData {
   name: string;
   description: string;
-  stops: RouteStop[];
 }
 
 export const getRoutes = async (): Promise<Route[]> => {
