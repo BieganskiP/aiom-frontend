@@ -1,10 +1,12 @@
 import { WorkEntry, CreateWorkEntryData, WorkEntriesFilters } from "@/types";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const createWorkEntry = async (
   data: CreateWorkEntryData
 ): Promise<WorkEntry> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/work-entries", {
+  const response = await fetch(`${API_BASE_URL}/work-entries`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +27,7 @@ export const getMyWorkEntries = async (
   month?: string
 ): Promise<WorkEntry[]> => {
   const token = localStorage.getItem("token");
-  const url = new URL("http://localhost:3001/api/v1/work-entries/my-entries");
+  const url = new URL(`${API_BASE_URL}/work-entries/my-entries`);
   if (month) {
     url.searchParams.append("month", month);
   }
@@ -47,7 +49,7 @@ export const getAllWorkEntries = async (
   filters?: WorkEntriesFilters
 ): Promise<WorkEntry[]> => {
   const token = localStorage.getItem("token");
-  const url = new URL("http://localhost:3001/api/v1/work-entries");
+  const url = new URL(`${API_BASE_URL}/work-entries`);
 
   if (filters) {
     Object.entries(filters).forEach(([key, value]) => {
@@ -75,17 +77,14 @@ export const updateWorkEntry = async (
   data: Partial<CreateWorkEntryData>
 ): Promise<WorkEntry> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/work-entries/${id}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/work-entries/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
@@ -97,15 +96,12 @@ export const updateWorkEntry = async (
 
 export const deleteWorkEntry = async (id: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/work-entries/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/work-entries/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);

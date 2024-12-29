@@ -1,12 +1,14 @@
 import Cookies from "js-cookie";
 import { User, LoginResponse, SignupData, TokenResponse } from "@/types";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const login = async (
   email: string,
   password: string
 ): Promise<LoginResponse> => {
   try {
-    const response = await fetch("http://localhost:3001/api/v1/auth/login", {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +35,7 @@ export const login = async (
 export const logout = async () => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:3001/api/v1/auth/logout", {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -53,16 +55,13 @@ export const logout = async () => {
 
 export const signup = async (data: SignupData): Promise<void> => {
   try {
-    const response = await fetch(
-      "http://localhost:3001/api/v1/auth/complete-registration",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/auth/complete-registration`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
@@ -82,7 +81,7 @@ export const signup = async (data: SignupData): Promise<void> => {
 export const refreshUserSession = async (): Promise<TokenResponse> => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:3001/api/v1/auth/refresh", {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -111,7 +110,7 @@ export const refreshUserSession = async (): Promise<TokenResponse> => {
 export const fetchUserProfile = async (): Promise<User> => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:3001/api/v1/auth/profile", {
+    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -1,3 +1,5 @@
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 interface UpdateProfileData {
   firstName: string;
   lastName: string;
@@ -15,7 +17,7 @@ interface ChangePasswordData {
 
 export const updateProfile = async (data: UpdateProfileData): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/users/profile", {
+  const response = await fetch(`${API_BASE_URL}/users/profile`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -37,17 +39,14 @@ export const changePassword = async (
   data: ChangePasswordData
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    "http://localhost:3001/api/v1/users/change-password",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);

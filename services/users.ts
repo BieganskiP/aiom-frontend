@@ -1,5 +1,7 @@
 import { User } from "@/types";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 interface InviteUserData {
   email: string;
 }
@@ -21,7 +23,7 @@ interface UpdateUserData {
 
 export const inviteUser = async (data: InviteUserData): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/auth/invite", {
+  const response = await fetch(`${API_BASE_URL}/auth/invite`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +43,7 @@ export const inviteUser = async (data: InviteUserData): Promise<void> => {
 
 export const getUsers = async (): Promise<User[]> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/users", {
+  const response = await fetch(`${API_BASE_URL}/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -59,7 +61,7 @@ export const updateUser = async (
   data: UpdateUserData
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/users/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/users/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -79,7 +81,7 @@ export const updateUser = async (
 
 export const deleteUser = async (id: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/users/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/users/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -96,17 +98,14 @@ export const toggleUserActive = async (
   active: boolean
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/users/${id}/toggle-active`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ active }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/users/${id}/toggle-active`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ active }),
+  });
 
   if (!response.ok) {
     throw new Error("Nie udało się zmienić statusu użytkownika");
@@ -126,7 +125,7 @@ export const updateUserPaidPerStop = async (
 ): Promise<void> => {
   const token = localStorage.getItem("token");
   const response = await fetch(
-    `http://localhost:3001/api/v1/users/${userId}/paid-per-stop`,
+    `${API_BASE_URL}/users/${userId}/paid-per-stop`,
     {
       method: "PATCH",
       headers: {

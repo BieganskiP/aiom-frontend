@@ -1,5 +1,7 @@
 import { Route } from "@/types";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 interface CreateRouteData {
   name: string;
   description: string;
@@ -7,7 +9,7 @@ interface CreateRouteData {
 
 export const getRoutes = async (): Promise<Route[]> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/routes", {
+  const response = await fetch(`${API_BASE_URL}/routes`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -22,7 +24,7 @@ export const getRoutes = async (): Promise<Route[]> => {
 
 export const createRoute = async (data: CreateRouteData): Promise<Route> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/routes", {
+  const response = await fetch(`${API_BASE_URL}/routes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +46,7 @@ export const updateRoute = async (
   data: Partial<CreateRouteData & { active: boolean }>
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/routes/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/routes/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -61,7 +63,7 @@ export const updateRoute = async (
 
 export const deleteRoute = async (id: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/routes/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/routes/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -75,15 +77,12 @@ export const deleteRoute = async (id: string): Promise<void> => {
 
 export const softDeleteRoute = async (id: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/routes/${id}/soft`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/routes/${id}/soft`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!response.ok) {
     throw new Error("Nie udało się dezaktywować trasy");
@@ -95,17 +94,14 @@ export const assignRouteToUser = async (
   assignedUserId: string | null
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/routes/${routeId}/assign`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ assignedUserId }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/routes/${routeId}/assign`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ assignedUserId }),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
@@ -117,15 +113,12 @@ export const assignRouteToUser = async (
 
 export const unassignRoute = async (routeId: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/routes/${routeId}/unassign`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/routes/${routeId}/unassign`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);

@@ -1,5 +1,7 @@
 import { Car, CarOwner, CarStatus } from "@/types";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 interface CreateCarData {
   name: string;
   licensePlate: string;
@@ -13,7 +15,7 @@ interface CreateCarData {
 
 export const getCars = async (): Promise<Car[]> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/cars", {
+  const response = await fetch(`${API_BASE_URL}/cars`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -33,17 +35,14 @@ export const assignCarToUser = async (
   assignedUserId: string | null
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/cars/${carId}/assign`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ assignedUserId }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cars/${carId}/assign`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ assignedUserId }),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
@@ -55,15 +54,12 @@ export const assignCarToUser = async (
 
 export const unassignCar = async (carId: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/cars/${carId}/unassign`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cars/${carId}/unassign`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
@@ -75,7 +71,7 @@ export const unassignCar = async (carId: string): Promise<void> => {
 
 export const createCar = async (data: CreateCarData): Promise<Car> => {
   const token = localStorage.getItem("token");
-  const response = await fetch("http://localhost:3001/api/v1/cars", {
+  const response = await fetch(`${API_BASE_URL}/cars`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -97,7 +93,7 @@ export const updateCar = async (
   data: Partial<CreateCarData>
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/cars/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/cars/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -116,7 +112,7 @@ export const updateCar = async (
 
 export const deleteCar = async (id: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/cars/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/cars/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -130,7 +126,7 @@ export const deleteCar = async (id: string): Promise<void> => {
 
 export const softDeleteCar = async (id: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`http://localhost:3001/api/v1/cars/${id}/soft`, {
+  const response = await fetch(`${API_BASE_URL}/cars/${id}/soft`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -147,17 +143,14 @@ export const updateCarStatus = async (
   status: CarStatus
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const response = await fetch(
-    `http://localhost:3001/api/v1/cars/${id}/status`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/cars/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
