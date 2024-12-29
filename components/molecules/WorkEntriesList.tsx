@@ -34,55 +34,52 @@ export const WorkEntriesList = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-bg-800 rounded-lg">
       {error && (
-        <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm mb-4">
+        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
           {error}
         </div>
       )}
 
       <table className="w-full">
-        <thead className="bg-neutral-50 border-b border-neutral-200">
+        <thead className="border-b border-bg-700">
           <tr>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Data
             </th>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Przystanki
             </th>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Trasa
             </th>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Samochód
             </th>
-            <th className="text-right p-4 text-sm font-medium text-neutral-600">
+            <th className="text-right p-4 text-sm font-medium text-neutral-400">
               Zarobek
             </th>
             <th className="w-20"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-bg-700">
           {entries.map((entry) => (
-            <tr
-              key={entry.id}
-              className="border-b border-neutral-200 last:border-0"
-            >
-              <td className="p-4 text-neutral-600">
+            <tr key={entry.id}>
+              <td className="p-4 text-foreground">
                 {format(new Date(entry.workDate), "d MMMM yyyy", {
                   locale: pl,
                 })}
               </td>
-              <td className="p-4 text-neutral-600">{entry.stopsCompleted}</td>
-              <td className="p-4 text-neutral-600">
+              <td className="p-4 text-foreground">{entry.stopsCompleted}</td>
+              <td className="p-4 text-foreground">
                 {entry.route?.name || "Brak"}
               </td>
-              <td className="p-4 text-neutral-600">
+              <td className="p-4 text-foreground">
                 {entry.car
                   ? `${entry.car.name} (${entry.car.licensePlate})`
                   : "Brak"}
               </td>
-              <td className="p-4 text-neutral-600 text-right">
+              <td className="p-4 text-foreground text-right">
                 {(
                   entry.stopsCompleted * (entry.user?.paidPerStop || 0)
                 ).toFixed(2)}{" "}
@@ -92,14 +89,14 @@ export const WorkEntriesList = ({
                 <div className="flex justify-end gap-2">
                   <button
                     onClick={() => setEditingEntry(entry)}
-                    className="p-1 hover:bg-neutral-50 rounded-lg text-neutral-400 hover:text-neutral-600"
+                    className="p-1 hover:bg-bg-700 rounded-lg text-neutral-400 hover:text-neutral-200"
                     title="Edytuj wpis"
                   >
                     <Pencil size={20} />
                   </button>
                   <button
                     onClick={() => handleDelete(entry.id)}
-                    className="p-1 hover:bg-neutral-50 rounded-lg text-neutral-400 hover:text-error-600"
+                    className="p-1 hover:bg-bg-700 rounded-lg text-neutral-400 hover:text-error-500"
                     title="Usuń wpis"
                   >
                     <Trash2 size={20} />
@@ -110,20 +107,20 @@ export const WorkEntriesList = ({
           ))}
           {entries.length === 0 && (
             <tr>
-              <td colSpan={6} className="p-4 text-center text-neutral-500">
+              <td colSpan={6} className="p-4 text-center text-neutral-400">
                 Brak wpisów dla wybranego miesiąca
               </td>
             </tr>
           )}
         </tbody>
-        <tfoot className="bg-neutral-50 border-t border-neutral-200 font-medium">
+        <tfoot className="border-t border-bg-700 font-medium">
           <tr>
-            <td className="p-4">Suma</td>
-            <td className="p-4">
+            <td className="p-4 text-foreground">Suma</td>
+            <td className="p-4 text-foreground">
               {entries.reduce((sum, entry) => sum + entry.stopsCompleted, 0)}
             </td>
             <td colSpan={2}></td>
-            <td className="p-4 text-right">
+            <td className="p-4 text-right text-foreground">
               {entries
                 .reduce(
                   (sum, entry) =>

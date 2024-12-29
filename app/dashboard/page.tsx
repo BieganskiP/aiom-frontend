@@ -96,57 +96,73 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold text-neutral-800 mb-6">
+        <h1 className="text-2xl font-bold text-foreground mb-6">
           Panel główny
         </h1>
 
         {error && (
-          <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm mb-4">
+          <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
             {error}
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-sm font-medium text-neutral-600">
+          <div className="bg-bg-800 p-6 rounded-lg">
+            <div className="text-sm font-medium text-neutral-400">
               Liczba przystanków
             </div>
-            <div className="text-2xl font-bold text-neutral-900 mt-2">
+            <div className="text-2xl font-bold text-foreground mt-2">
               {totalStops}
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-sm font-medium text-neutral-600">
+          <div className="bg-bg-800 p-6 rounded-lg">
+            <div className="text-sm font-medium text-neutral-400">
               Zarobek w tym miesiącu
             </div>
-            <div className="text-2xl font-bold text-neutral-900 mt-2">
+            <div className="text-2xl font-bold text-foreground mt-2">
               {totalEarnings.toFixed(2)} zł
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-sm font-medium text-neutral-600">
+          <div className="bg-bg-800 p-6 rounded-lg">
+            <div className="text-sm font-medium text-neutral-400">
               Średnia przystanków dziennie
             </div>
-            <div className="text-2xl font-bold text-neutral-900 mt-2">
+            <div className="text-2xl font-bold text-foreground mt-2">
               {averageStopsPerDay.toFixed(1)}
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-bold text-neutral-800 mb-4">
+          <div className="bg-bg-800 p-6 rounded-lg">
+            <h2 className="text-lg font-bold text-foreground mb-4">
               Przystanki dziennie
             </h2>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={dailyStopsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} interval={2} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                    interval={2}
+                    stroke="#4B5563"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                    stroke="#4B5563"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1F2937",
+                      border: "1px solid #374151",
+                      borderRadius: "0.5rem",
+                      color: "#F9FAFB",
+                    }}
+                    labelStyle={{ color: "#9CA3AF" }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="stops"
@@ -158,17 +174,32 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-bold text-neutral-800 mb-4">
+          <div className="bg-bg-800 p-6 rounded-lg">
+            <h2 className="text-lg font-bold text-foreground mb-4">
               Przystanki na trasach
             </h2>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={routesData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                    stroke="#4B5563"
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                    stroke="#4B5563"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#1F2937",
+                      border: "1px solid #374151",
+                      borderRadius: "0.5rem",
+                      color: "#F9FAFB",
+                    }}
+                    labelStyle={{ color: "#9CA3AF" }}
+                  />
                   <Bar dataKey="count" fill="#6366f1" />
                 </BarChart>
               </ResponsiveContainer>

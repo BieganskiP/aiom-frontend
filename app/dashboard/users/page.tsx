@@ -36,7 +36,7 @@ export default function UsersPage() {
     return (
       <main className="min-h-screen p-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-600">Ładowanie...</div>
+          <div className="text-neutral-400">Ładowanie...</div>
         </div>
       </main>
     );
@@ -46,7 +46,9 @@ export default function UsersPage() {
     return (
       <main className="min-h-screen p-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-error-500">{error}</div>
+          <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
+            {error}
+          </div>
         </div>
       </main>
     );
@@ -56,14 +58,14 @@ export default function UsersPage() {
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-neutral-800">Użytkownicy</h1>
+          <h1 className="text-2xl font-bold text-foreground">Użytkownicy</h1>
           <Button onClick={() => setIsInviteModalOpen(true)}>
             <Plus className="w-5 h-5 mr-2" />
             Zaproś użytkownika
           </Button>
         </div>
 
-        <UsersList users={users} onUserUpdate={fetchUsers} />
+        <UsersList users={users} onUpdate={fetchUsers} onEdit={fetchUsers} />
 
         <InviteUserModal
           isOpen={isInviteModalOpen}

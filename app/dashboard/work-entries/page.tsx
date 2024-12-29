@@ -40,7 +40,7 @@ export default function WorkEntriesPage() {
     return (
       <main className="min-h-screen p-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-600">Ładowanie...</div>
+          <div className="text-neutral-400">Ładowanie...</div>
         </div>
       </main>
     );
@@ -50,13 +50,13 @@ export default function WorkEntriesPage() {
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-neutral-800">Wpisy pracy</h1>
+          <h1 className="text-2xl font-bold text-foreground">Wpisy pracy</h1>
           <div className="flex gap-4 items-center">
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+              className="rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
             />
             <Button onClick={() => setIsModalOpen(true)}>
               <Plus className="w-5 h-5 mr-2" />
@@ -66,7 +66,7 @@ export default function WorkEntriesPage() {
         </div>
 
         {error && (
-          <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm mb-4">
+          <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
             {error}
           </div>
         )}

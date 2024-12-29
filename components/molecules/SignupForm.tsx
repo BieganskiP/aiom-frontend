@@ -1,22 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { signup } from "@/services/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 interface SignupFormData {
-  password: string;
-  confirmPassword: string;
   firstName: string;
   lastName: string;
-  city: string;
-  postCode: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber: string;
   street: string;
   houseNumber: string;
-  phoneNumber: string;
+  postCode: string;
+  city: string;
 }
 
 interface SignupFormProps {
@@ -26,39 +27,31 @@ interface SignupFormProps {
 export const SignupForm = ({ token }: SignupFormProps) => {
   const router = useRouter();
   const [error, setError] = useState<string>("");
-
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
+    watch,
   } = useForm<SignupFormData>();
 
   const password = watch("password");
 
-  const onSubmit = async ({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    confirmPassword,
-    ...signupData
-  }: SignupFormData) => {
+  const onSubmit = async (data: SignupFormData) => {
     try {
       setError("");
-      await signup({
-        ...signupData,
-        token,
-      });
-      router.push("/?registered=true");
+      await signup({ ...data, token });
+      router.push("/login?registered=true");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Wystąpił nieoczekiwany błąd podczas rejestracji");
+        setError("Wystąpił nieoczekiwany błąd");
       }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
         <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
           {error}
@@ -68,8 +61,6 @@ export const SignupForm = ({ token }: SignupFormProps) => {
       <div className="grid grid-cols-2 gap-4">
         <TextInput
           label="Imię"
-          type="text"
-          placeholder="Wprowadź imię"
           {...register("firstName", {
             required: "Imię jest wymagane",
           })}
@@ -78,8 +69,6 @@ export const SignupForm = ({ token }: SignupFormProps) => {
 
         <TextInput
           label="Nazwisko"
-          type="text"
-          placeholder="Wprowadź nazwisko"
           {...register("lastName", {
             required: "Nazwisko jest wymagane",
           })}
@@ -88,85 +77,34 @@ export const SignupForm = ({ token }: SignupFormProps) => {
       </div>
 
       <TextInput
-        label="Numer telefonu"
-        type="tel"
-        placeholder="Wprowadź numer telefonu"
-        {...register("phoneNumber", {
-          required: "Numer telefonu jest wymagany",
+        type="email"
+        label="Email"
+        {...register("email", {
+          required: "Email jest wymagany",
           pattern: {
-            value: /^[0-9]{9}$/,
-            message: "Nieprawidłowy numer telefonu (9 cyfr)",
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "Nieprawidłowy adres email",
           },
         })}
-        error={errors.phoneNumber}
+        error={errors.email}
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <TextInput
-          label="Miasto"
-          type="text"
-          placeholder="Wprowadź miasto"
-          {...register("city", {
-            required: "Miasto jest wymagane",
-          })}
-          error={errors.city}
-        />
-
-        <TextInput
-          label="Kod pocztowy"
-          type="text"
-          placeholder="Wprowadź kod pocztowy"
-          {...register("postCode", {
-            required: "Kod pocztowy jest wymagany",
-            pattern: {
-              value: /^[0-9]{2}-[0-9]{3}$/,
-              message: "Nieprawidłowy kod pocztowy (format: XX-XXX)",
-            },
-          })}
-          error={errors.postCode}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <TextInput
-          label="Ulica"
-          type="text"
-          placeholder="Wprowadź ulicę"
-          {...register("street", {
-            required: "Ulica jest wymagana",
-          })}
-          error={errors.street}
-        />
-
-        <TextInput
-          label="Numer domu/mieszkania"
-          type="text"
-          placeholder="Wprowadź numer domu/mieszkania"
-          {...register("houseNumber", {
-            required: "Numer domu/mieszkania jest wymagany",
-          })}
-          error={errors.houseNumber}
-        />
-      </div>
-
       <TextInput
-        label="Hasło"
         type="password"
-        placeholder="Wprowadź hasło"
+        label="Hasło"
         {...register("password", {
           required: "Hasło jest wymagane",
           minLength: {
-            value: 6,
-            message: "Hasło musi mieć co najmniej 6 znaków",
+            value: 8,
+            message: "Hasło musi mieć co najmniej 8 znaków",
           },
         })}
         error={errors.password}
       />
 
       <TextInput
-        label="Potwierdź hasło"
         type="password"
-        placeholder="Wprowadź hasło ponownie"
+        label="Potwierdź hasło"
         {...register("confirmPassword", {
           required: "Potwierdzenie hasła jest wymagane",
           validate: (value) =>
@@ -175,12 +113,61 @@ export const SignupForm = ({ token }: SignupFormProps) => {
         error={errors.confirmPassword}
       />
 
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-primary-500 hover:bg-primary-600 text-white w-full py-2.5"
-      >
-        {isSubmitting ? "Tworzenie konta..." : "Utwórz konto"}
+      <TextInput
+        type="tel"
+        label="Numer telefonu"
+        {...register("phoneNumber", {
+          required: "Numer telefonu jest wymagany",
+          pattern: {
+            value: /^[0-9]{9}$/,
+            message: "Nieprawidłowy numer telefonu",
+          },
+        })}
+        error={errors.phoneNumber}
+      />
+
+      <div className="grid grid-cols-2 gap-4">
+        <TextInput
+          label="Ulica"
+          {...register("street", {
+            required: "Ulica jest wymagana",
+          })}
+          error={errors.street}
+        />
+
+        <TextInput
+          label="Numer domu/mieszkania"
+          {...register("houseNumber", {
+            required: "Numer domu jest wymagany",
+          })}
+          error={errors.houseNumber}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <TextInput
+          label="Kod pocztowy"
+          {...register("postCode", {
+            required: "Kod pocztowy jest wymagany",
+            pattern: {
+              value: /^[0-9]{2}-[0-9]{3}$/,
+              message: "Nieprawidłowy kod pocztowy",
+            },
+          })}
+          error={errors.postCode}
+        />
+
+        <TextInput
+          label="Miejscowość"
+          {...register("city", {
+            required: "Miejscowość jest wymagana",
+          })}
+          error={errors.city}
+        />
+      </div>
+
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? "Rejestracja..." : "Zarejestruj się"}
       </Button>
     </form>
   );
