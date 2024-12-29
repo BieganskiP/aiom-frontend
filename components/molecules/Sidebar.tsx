@@ -19,9 +19,9 @@ export const Sidebar = () => {
   const isAdmin = user?.role === "admin";
 
   return (
-    <aside className="w-64 h-screen border-r border-neutral-200 p-4 flex flex-col">
+    <aside className="w-64 h-screen border-r border-bg-700 p-4 flex flex-col bg-bg-800">
       <div className="mb-8">
-        <h1 className="text-xl font-bold text-neutral-800">AIOM</h1>
+        <h1 className="text-xl font-bold text-foreground">AIOM</h1>
       </div>
 
       {/* Main navigation - grows to fill available space */}
@@ -78,7 +78,7 @@ export const Sidebar = () => {
       </div>
 
       {/* Bottom section with logout button */}
-      <div className="mt-auto pt-4 border-t border-neutral-200">
+      <div className="mt-auto pt-4 border-t border-bg-700">
         <LogoutButton className="w-full justify-center">
           <div className="flex items-center gap-2">
             <LogOut size={20} />

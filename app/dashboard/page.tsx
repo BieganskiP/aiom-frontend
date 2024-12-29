@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WorkEntry, User } from "@/types";
+import { WorkEntry } from "@/types";
 import { getMyWorkEntries } from "@/services/workEntries";
 import {
   BarChart,
@@ -17,6 +17,7 @@ import {
 import { format, eachDayOfInterval, startOfMonth, endOfMonth } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -89,13 +90,7 @@ export default function DashboardPage() {
   );
 
   if (loading) {
-    return (
-      <main className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-600">Ładowanie...</div>
-        </div>
-      </main>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

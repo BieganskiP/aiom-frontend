@@ -48,13 +48,13 @@ export const PasswordForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
-        <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm">
+        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 text-green-600 p-3 rounded-lg text-sm">
+        <div className="bg-green-500/10 text-green-500 p-3 rounded-lg text-sm border border-green-500/20">
           {success}
         </div>
       )}

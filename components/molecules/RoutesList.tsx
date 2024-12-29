@@ -44,42 +44,39 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-bg-800 rounded-lg">
       {error && (
-        <div className="bg-error-50 text-error-500 p-3 text-sm mb-4">
+        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
           {error}
         </div>
       )}
 
       <table className="w-full">
-        <thead className="bg-neutral-50 border-b border-neutral-200">
+        <thead className="border-b border-bg-700">
           <tr>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Nazwa
             </th>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Przypisany kierowca
             </th>
-            <th className="text-left p-4 text-sm font-medium text-neutral-600">
+            <th className="text-left p-4 text-sm font-medium text-neutral-400">
               Status
             </th>
             <th className="w-20"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-bg-700">
           {routes.map((route) => (
-            <tr
-              key={route.id}
-              className="border-b border-neutral-200 last:border-0"
-            >
+            <tr key={route.id}>
               <td className="p-4">
-                <div className="font-medium text-neutral-900">{route.name}</div>
-                <div className="text-sm text-neutral-500">
+                <div className="font-medium text-foreground">{route.name}</div>
+                <div className="text-sm text-neutral-400">
                   {route.description}
                 </div>
               </td>
 
-              <td className="p-4 text-neutral-600">
+              <td className="p-4 text-neutral-200">
                 {route.assignedUser
                   ? `${route.assignedUser.firstName} ${route.assignedUser.lastName}`
                   : "Brak"}
@@ -88,8 +85,8 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     route.active
-                      ? "bg-green-100 text-green-800"
-                      : "bg-neutral-100 text-neutral-800"
+                      ? "bg-green-500/10 text-green-500"
+                      : "bg-neutral-500/10 text-neutral-400"
                   }`}
                 >
                   {route.active ? "Aktywna" : "Nieaktywna"}
@@ -103,20 +100,20 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                         actionRouteId === route.id ? null : route.id
                       )
                     }
-                    className="p-2 hover:bg-neutral-50 rounded-lg"
+                    className="p-2 hover:bg-bg-700 rounded-lg"
                     disabled={user?.role !== "admin"}
                   >
                     <MoreVertical size={20} className="text-neutral-400" />
                   </button>
 
                   {actionRouteId === route.id && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-10">
+                    <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-10">
                       <button
                         onClick={() => {
                           setActionRouteId(null);
                           onEdit(route);
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                       >
                         <Pencil size={16} />
                         Edytuj
@@ -126,7 +123,7 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                           setActionRouteId(null);
                           handleSoftDelete(route.id);
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-50 flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                       >
                         <Ban size={16} />
                         Dezaktywuj
@@ -136,7 +133,7 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                           setActionRouteId(null);
                           handleDelete(route.id);
                         }}
-                        className="w-full px-4 py-2 text-left text-sm text-error-600 hover:bg-error-50 flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
                       >
                         <Trash2 size={16} />
                         Usuń

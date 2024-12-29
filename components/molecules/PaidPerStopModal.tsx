@@ -57,23 +57,23 @@ export const PaidPerStopModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600"
+          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"
         >
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold text-neutral-800 mb-4">
+        <h2 className="text-xl font-bold text-foreground mb-4">
           Edytuj stawkę za przystanek
         </h2>
-        <p className="text-sm text-neutral-600 mb-4">Użytkownik: {userName}</p>
+        <p className="text-sm text-neutral-400 mb-4">Użytkownik: {userName}</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && (
-            <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm">
+            <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
               {error}
             </div>
           )}
@@ -86,7 +86,7 @@ export const PaidPerStopModal = ({
               required: "Stawka jest wymagana",
               min: {
                 value: 0,
-                message: "Stawka nie może by�� ujemna",
+                message: "Stawka nie może być ujemna",
               },
               pattern: {
                 value: /^\d+(\.\d{1,2})?$/,

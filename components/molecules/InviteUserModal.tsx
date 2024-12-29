@@ -49,22 +49,22 @@ export const InviteUserModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600"
+          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"
         >
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold text-neutral-800 mb-4">
+        <h2 className="text-xl font-bold text-foreground mb-4">
           Zaproś użytkownika
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && (
-            <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm">
+            <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
               {error}
             </div>
           )}

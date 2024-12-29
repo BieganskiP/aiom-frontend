@@ -20,20 +20,20 @@ export default function SignupPage() {
 
   if (isValidToken === null) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-neutral-600">Weryfikacja zaproszenia...</div>
+      <main className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="text-neutral-400">Weryfikacja zaproszenia...</div>
       </main>
     );
   }
 
-  if (!isValidToken) {
+  if (!isValidToken || !token) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4">
+      <main className="min-h-screen flex items-center justify-center p-4 bg-background">
         <div className="max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-neutral-800 mb-4">
+          <h1 className="text-2xl font-bold text-primary-500 mb-4">
             Nieprawidłowy link
           </h1>
-          <p className="text-neutral-600">
+          <p className="text-neutral-400">
             Link do rejestracji jest nieprawidłowy lub wygasł. Poproś o nowe
             zaproszenie.
           </p>
@@ -43,12 +43,18 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-neutral-800 mb-8 text-center">
-          Utwórz konto
-        </h1>
-        <SignupForm token={token} />
+    <main className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-primary-500 mb-2">AIOM</h1>
+          <p className="text-neutral-400">All-in-one Manager</p>
+        </div>
+        <div className="bg-bg-800 p-8 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold text-foreground mb-6 text-center">
+            Utwórz konto
+          </h2>
+          <SignupForm token={token} />
+        </div>
       </div>
     </main>
   );

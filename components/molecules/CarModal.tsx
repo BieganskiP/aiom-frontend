@@ -38,19 +38,29 @@ export const CarModal = ({
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<CarFormData>();
+  } = useForm<CarFormData>({
+    defaultValues: car
+      ? {
+          ...car,
+          checkupDate: car.checkupDate.split("T")[0],
+          oilChangeDate: car.oilChangeDate.split("T")[0],
+          tiresChangeDate: car.tiresChangeDate.split("T")[0],
+          brakesChangeDate: car.brakesChangeDate.split("T")[0],
+        }
+      : {
+          owner: CarOwner.OWN_COMPANY,
+          status: CarStatus.AVAILABLE,
+        },
+  });
 
   useEffect(() => {
     if (car) {
       reset({
-        name: car.name,
-        licensePlate: car.licensePlate,
-        owner: car.owner,
-        status: car.status,
-        checkupDate: car.checkupDate?.split("T")[0] || "",
-        oilChangeDate: car.oilChangeDate?.split("T")[0] || "",
-        tiresChangeDate: car.tiresChangeDate?.split("T")[0] || "",
-        brakesChangeDate: car.brakesChangeDate?.split("T")[0] || "",
+        ...car,
+        checkupDate: car.checkupDate.split("T")[0],
+        oilChangeDate: car.oilChangeDate.split("T")[0],
+        tiresChangeDate: car.tiresChangeDate.split("T")[0],
+        brakesChangeDate: car.brakesChangeDate.split("T")[0],
       });
     } else {
       reset({
@@ -70,7 +80,6 @@ export const CarModal = ({
       } else {
         await createCar(data);
       }
-      reset();
       onSuccess();
       onClose();
     } catch (error) {
@@ -83,56 +92,56 @@ export const CarModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600"
+          className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"
         >
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold text-neutral-800 mb-4">
+        <h2 className="text-xl font-bold text-foreground mb-4">
           {car ? "Edytuj samochód" : "Dodaj samochód"}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && (
-            <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm">
+            <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
               {error}
             </div>
           )}
 
-          <TextInput
-            label="Nazwa"
-            placeholder="Wprowadź nazwę samochodu"
-            {...register("name", {
-              required: "Nazwa jest wymagana",
-            })}
-            error={errors.name}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <TextInput
+              label="Nazwa"
+              placeholder="Wprowadź nazwę"
+              {...register("name", {
+                required: "Nazwa jest wymagana",
+              })}
+              error={errors.name}
+            />
 
-          <TextInput
-            label="Numer rejestracyjny"
-            placeholder="Wprowadź numer rejestracyjny"
-            {...register("licensePlate", {
-              required: "Numer rejestracyjny jest wymagany",
-              pattern: {
-                value: /^[A-Z0-9 ]{4,10}$/i,
-                message: "Nieprawidłowy numer rejestracyjny",
-              },
-            })}
-            error={errors.licensePlate}
-          />
+            <TextInput
+              label="Numer rejestracyjny"
+              placeholder="Wprowadź numer"
+              {...register("licensePlate", {
+                required: "Numer rejestracyjny jest wymagany",
+              })}
+              error={errors.licensePlate}
+            />
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-neutral-700">
+              <label className="text-sm font-medium text-neutral-200 mb-1 block">
                 Właściciel
               </label>
               <select
-                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
-                {...register("owner", { required: "Właściciel jest wymagany" })}
+                className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                {...register("owner", {
+                  required: "Właściciel jest wymagany",
+                })}
               >
                 <option value={CarOwner.OWN_COMPANY}>Firma własna</option>
                 <option value={CarOwner.PARENT_COMPANY}>Firma matka</option>
@@ -140,12 +149,14 @@ export const CarModal = ({
             </div>
 
             <div>
-              <label className="text-sm font-medium text-neutral-700">
+              <label className="text-sm font-medium text-neutral-200 mb-1 block">
                 Status
               </label>
               <select
-                className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
-                {...register("status", { required: "Status jest wymagany" })}
+                className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                {...register("status", {
+                  required: "Status jest wymagany",
+                })}
               >
                 <option value={CarStatus.AVAILABLE}>Dostępny</option>
                 <option value={CarStatus.IN_USE}>W użyciu</option>

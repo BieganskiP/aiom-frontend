@@ -33,6 +33,7 @@ export default function WorkEntriesPage() {
 
   useEffect(() => {
     fetchEntries();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth]);
 
   if (loading) {

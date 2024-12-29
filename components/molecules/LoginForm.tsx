@@ -51,9 +51,9 @@ export const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       {error && (
-        <div className="bg-error-50 text-error-500 p-3 rounded-lg text-sm">
+        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
           {error}
         </div>
       )}
@@ -86,7 +86,11 @@ export const LoginForm = () => {
         error={errors.password}
       />
 
-      <Button type="submit" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="bg-primary-500 hover:bg-primary-600 text-white w-full py-2.5"
+      >
         {isSubmitting ? "Logowanie..." : "Zaloguj się"}
       </Button>
     </form>
