@@ -137,12 +137,7 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
                       </button>
 
                       {actionUserId === user.id && (
-                        <div
-                          className="fixed md:absolute right-4 md:right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]"
-                          style={{
-                            top: "auto",
-                          }}
-                        >
+                        <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
                           <button
                             onClick={() => {
                               setActionUserId(null);

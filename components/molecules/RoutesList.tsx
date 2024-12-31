@@ -1,11 +1,13 @@
 "use client";
 
 import { Route } from "@/types";
-import { deleteRoute, softDeleteRoute } from "@/services/routes";
-import { MoreVertical, Pencil, Trash2, Ban } from "lucide-react";
-import { useState } from "react";
+import { deleteRoute, softDeleteRoute, unassignRoute } from "@/services/routes";
+import { MoreVertical, Pencil, Trash2, Ban, Users } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
+import { getUsers } from "@/services/users";
+import { AssignRouteModal } from "./AssignRouteModal";
 
 interface RoutesListProps {
   routes: Route[];
@@ -17,6 +19,23 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
   const { user } = useAuth();
   const [actionRouteId, setActionRouteId] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [assigningRoute, setAssigningRoute] = useState<{
+    routeId: string;
+    name: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersData = await getUsers();
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Czy na pewno chcesz usunąć tę trasę?")) return;
@@ -41,6 +60,23 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
     } catch (error) {
       setError("Nie udało się dezaktywować trasy");
       console.error(error);
+    }
+  };
+
+  const handleUnassign = async (routeId: string) => {
+    if (!window.confirm("Czy na pewno chcesz odpiąć trasę od użytkownika?"))
+      return;
+
+    try {
+      setError("");
+      await unassignRoute(routeId);
+      onUpdate();
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Wystąpił nieoczekiwany błąd");
+      }
     }
   };
 
@@ -112,12 +148,7 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                     </button>
 
                     {actionRouteId === route.id && (
-                      <div
-                        className="fixed md:absolute right-4 md:right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]"
-                        style={{
-                          top: "auto",
-                        }}
-                      >
+                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
                         <button
                           onClick={() => {
                             setActionRouteId(null);
@@ -128,6 +159,32 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                           <Pencil size={16} />
                           Edytuj
                         </button>
+                        {route.assignedUser ? (
+                          <button
+                            onClick={() => {
+                              setActionRouteId(null);
+                              handleUnassign(route.id);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Ban size={16} />
+                            Odepnij użytkownika
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setActionRouteId(null);
+                              setAssigningRoute({
+                                routeId: route.id,
+                                name: route.name,
+                              });
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Users size={16} />
+                            Przypisz użytkownika
+                          </button>
+                        )}
                         <button
                           onClick={() => {
                             setActionRouteId(null);
@@ -157,6 +214,16 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
           </tbody>
         </table>
       </TableWrapper>
+
+      {assigningRoute && (
+        <AssignRouteModal
+          isOpen={true}
+          onClose={() => setAssigningRoute(null)}
+          onSuccess={onUpdate}
+          routeId={assigningRoute.routeId}
+          users={users}
+        />
+      )}
     </div>
   );
 };

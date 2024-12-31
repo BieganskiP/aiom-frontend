@@ -1,11 +1,13 @@
 "use client";
 
 import { Car, CarOwner, CarStatus } from "@/types";
-import { useState } from "react";
-import { MoreVertical, Pencil, Ban, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MoreVertical, Pencil, Ban, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { deleteCar, updateCarStatus } from "@/services/cars";
+import { deleteCar, updateCarStatus, unassignCar } from "@/services/cars";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
+import { getUsers } from "@/services/users";
+import { AssignCarModal } from "./AssignCarModal";
 
 interface CarsListProps {
   cars: Car[];
@@ -17,6 +19,23 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
   const { user } = useAuth();
   const [actionCarId, setActionCarId] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [assigningCar, setAssigningCar] = useState<{
+    carId: string;
+    name: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersData = await getUsers();
+        setUsers(usersData);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleSoftDelete = async (id: string) => {
     try {
@@ -38,6 +57,23 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
     try {
       setError("");
       await deleteCar(id);
+      onUpdate();
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Wystąpił nieoczekiwany błąd");
+      }
+    }
+  };
+
+  const handleUnassign = async (carId: string) => {
+    if (!window.confirm("Czy na pewno chcesz odpiąć samochód od użytkownika?"))
+      return;
+
+    try {
+      setError("");
+      await unassignCar(carId);
       onUpdate();
     } catch (error) {
       if (error instanceof Error) {
@@ -144,12 +180,7 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                     </button>
 
                     {actionCarId === car.id && (
-                      <div
-                        className="fixed md:absolute right-4 md:right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]"
-                        style={{
-                          top: "auto",
-                        }}
-                      >
+                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
                         <button
                           onClick={() => {
                             setActionCarId(null);
@@ -160,6 +191,32 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                           <Pencil size={16} />
                           Edytuj
                         </button>
+                        {car.assignedUser ? (
+                          <button
+                            onClick={() => {
+                              setActionCarId(null);
+                              handleUnassign(car.id);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Ban size={16} />
+                            Odepnij użytkownika
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setActionCarId(null);
+                              setAssigningCar({
+                                carId: car.id,
+                                name: car.name,
+                              });
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Users size={16} />
+                            Przypisz użytkownika
+                          </button>
+                        )}
                         <button
                           onClick={() => {
                             setActionCarId(null);
@@ -196,6 +253,16 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
           </tbody>
         </table>
       </TableWrapper>
+
+      {assigningCar && (
+        <AssignCarModal
+          isOpen={true}
+          onClose={() => setAssigningCar(null)}
+          onSuccess={onUpdate}
+          carId={assigningCar.carId}
+          users={users}
+        />
+      )}
     </div>
   );
 };

@@ -29,42 +29,33 @@ export const getCars = async (): Promise<Car[]> => {
   return data;
 };
 
-export const assignCarToUser = async (
+export const assignCar = async (
   carId: string,
   assignedUserId: string | null
-): Promise<void> => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/cars/${carId}/assign`, {
+) => {
+  const response = await fetch(`/api/v1/cars/${carId}/assign`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ assignedUserId }),
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(
-      errorData?.message || "Nie udało się przypisać samochodu do użytkownika"
-    );
+    throw new Error("Nie udało się przypisać samochodu");
   }
 };
 
-export const unassignCar = async (carId: string): Promise<void> => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/cars/${carId}/unassign`, {
+export const unassignCar = async (carId: string) => {
+  const response = await fetch(`/api/v1/cars/${carId}/unassign`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(
-      errorData?.message || "Nie udało się odpiąć samochodu od użytkownika"
-    );
+    throw new Error("Nie udało się odpiąć samochodu");
   }
 };
 

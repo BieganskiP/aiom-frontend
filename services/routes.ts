@@ -89,41 +89,32 @@ export const softDeleteRoute = async (id: string): Promise<void> => {
   }
 };
 
-export const assignRouteToUser = async (
+export const assignRoute = async (
   routeId: string,
   assignedUserId: string | null
-): Promise<void> => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/routes/${routeId}/assign`, {
+) => {
+  const response = await fetch(`/api/v1/routes/${routeId}/assign`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ assignedUserId }),
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(
-      errorData?.message || "Nie udało się przypisać trasy do użytkownika"
-    );
+    throw new Error("Nie udało się przypisać trasy");
   }
 };
 
-export const unassignRoute = async (routeId: string): Promise<void> => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_BASE_URL}/routes/${routeId}/unassign`, {
+export const unassignRoute = async (routeId: string) => {
+  const response = await fetch(`/api/v1/routes/${routeId}/unassign`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(
-      errorData?.message || "Nie udało się odpiąć trasy od użytkownika"
-    );
+    throw new Error("Nie udało się odpiąć trasy");
   }
 };
