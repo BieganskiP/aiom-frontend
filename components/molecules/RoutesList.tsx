@@ -1,6 +1,6 @@
 "use client";
 
-import { Route } from "@/types";
+import { Route, User } from "@/types";
 import { deleteRoute, softDeleteRoute, unassignRoute } from "@/services/routes";
 import { MoreVertical, Pencil, Trash2, Ban, Users } from "lucide-react";
 import { useState, useEffect } from "react";

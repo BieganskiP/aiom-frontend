@@ -1,6 +1,6 @@
 "use client";
 
-import { Car, CarOwner, CarStatus } from "@/types";
+import { Car, CarOwner, CarStatus, User } from "@/types";
 import { useState, useEffect } from "react";
 import { MoreVertical, Pencil, Ban, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
