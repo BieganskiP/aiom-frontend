@@ -83,7 +83,7 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
         </div>
       )}
 
-      <div className="bg-bg-800 rounded-lg overflow-hidden">
+      <div className="bg-bg-800 rounded-lg">
         <table className="w-full">
           <thead>
             <tr className="border-b border-bg-700">
@@ -123,7 +123,9 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                   </span>
                 </td>
                 <td className="p-4 text-foreground">
-                  {new Date(car.checkupDate).toLocaleDateString()}
+                  {car.checkupDate
+                    ? new Date(car.checkupDate).toLocaleDateString()
+                    : "-"}
                 </td>
                 <td className="p-4">
                   <div className="relative">
@@ -138,7 +140,7 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                     </button>
 
                     {actionCarId === car.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-10">
+                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
                         <button
                           onClick={() => {
                             setActionCarId(null);

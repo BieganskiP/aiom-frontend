@@ -42,14 +42,18 @@ export const CarModal = ({
     defaultValues: car
       ? {
           ...car,
-          checkupDate: car.checkupDate.split("T")[0],
-          oilChangeDate: car.oilChangeDate.split("T")[0],
-          tiresChangeDate: car.tiresChangeDate.split("T")[0],
-          brakesChangeDate: car.brakesChangeDate.split("T")[0],
+          checkupDate: car.checkupDate?.split("T")[0] || "",
+          oilChangeDate: car.oilChangeDate?.split("T")[0] || "",
+          tiresChangeDate: car.tiresChangeDate?.split("T")[0] || "",
+          brakesChangeDate: car.brakesChangeDate?.split("T")[0] || "",
         }
       : {
           owner: CarOwner.OWN_COMPANY,
           status: CarStatus.AVAILABLE,
+          checkupDate: "",
+          oilChangeDate: "",
+          tiresChangeDate: "",
+          brakesChangeDate: "",
         },
   });
 
@@ -57,15 +61,19 @@ export const CarModal = ({
     if (car) {
       reset({
         ...car,
-        checkupDate: car.checkupDate.split("T")[0],
-        oilChangeDate: car.oilChangeDate.split("T")[0],
-        tiresChangeDate: car.tiresChangeDate.split("T")[0],
-        brakesChangeDate: car.brakesChangeDate.split("T")[0],
+        checkupDate: car.checkupDate?.split("T")[0] || "",
+        oilChangeDate: car.oilChangeDate?.split("T")[0] || "",
+        tiresChangeDate: car.tiresChangeDate?.split("T")[0] || "",
+        brakesChangeDate: car.brakesChangeDate?.split("T")[0] || "",
       });
     } else {
       reset({
         owner: CarOwner.OWN_COMPANY,
         status: CarStatus.AVAILABLE,
+        checkupDate: "",
+        oilChangeDate: "",
+        tiresChangeDate: "",
+        brakesChangeDate: "",
       });
     }
   }, [car, reset]);
@@ -75,10 +83,18 @@ export const CarModal = ({
   const onSubmit = async (data: CarFormData) => {
     try {
       setError("");
+      const submitData = {
+        ...data,
+        checkupDate: data.checkupDate || "",
+        oilChangeDate: data.oilChangeDate || "",
+        tiresChangeDate: data.tiresChangeDate || "",
+        brakesChangeDate: data.brakesChangeDate || "",
+      };
+
       if (car) {
-        await updateCar(car.id, data);
+        await updateCar(car.id, submitData);
       } else {
-        await createCar(data);
+        await createCar(submitData);
       }
       onSuccess();
       onClose();
@@ -172,18 +188,14 @@ export const CarModal = ({
             <TextInput
               label="Data przeglądu"
               type="date"
-              {...register("checkupDate", {
-                required: "Data przeglądu jest wymagana",
-              })}
+              {...register("checkupDate")}
               error={errors.checkupDate}
             />
 
             <TextInput
               label="Data wymiany oleju"
               type="date"
-              {...register("oilChangeDate", {
-                required: "Data wymiany oleju jest wymagana",
-              })}
+              {...register("oilChangeDate")}
               error={errors.oilChangeDate}
             />
           </div>
@@ -192,18 +204,14 @@ export const CarModal = ({
             <TextInput
               label="Data wymiany opon"
               type="date"
-              {...register("tiresChangeDate", {
-                required: "Data wymiany opon jest wymagana",
-              })}
+              {...register("tiresChangeDate")}
               error={errors.tiresChangeDate}
             />
 
             <TextInput
               label="Data wymiany hamulców"
               type="date"
-              {...register("brakesChangeDate", {
-                required: "Data wymiany hamulców jest wymagana",
-              })}
+              {...register("brakesChangeDate")}
               error={errors.brakesChangeDate}
             />
           </div>
