@@ -7,6 +7,7 @@ import { Button } from "@/components/atoms/Button";
 import { UsersList } from "@/components/molecules/UsersList";
 import { InviteUserModal } from "@/components/molecules/InviteUserModal";
 import { Plus } from "lucide-react";
+import { UsersListSkeleton } from "@/components/skeletons/UsersListSkeleton";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -33,13 +34,7 @@ export default function UsersPage() {
   }, []);
 
   if (loading) {
-    return (
-      <main className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-400">Ładowanie...</div>
-        </div>
-      </main>
-    );
+    return <UsersListSkeleton />;
   }
 
   return (
