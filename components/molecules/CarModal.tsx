@@ -186,15 +186,17 @@ export const CarModal = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
-              label="Data przeglądu"
+              label="Data przeglądu (opcjonalne)"
               type="date"
+              className="w-full"
               {...register("checkupDate")}
               error={errors.checkupDate}
             />
 
             <TextInput
-              label="Data wymiany oleju"
+              label="Data wymiany oleju (opcjonalne)"
               type="date"
+              className="w-full"
               {...register("oilChangeDate")}
               error={errors.oilChangeDate}
             />
@@ -202,15 +204,17 @@ export const CarModal = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
-              label="Data wymiany opon"
+              label="Data wymiany opon (opcjonalne)"
               type="date"
+              className="w-full"
               {...register("tiresChangeDate")}
               error={errors.tiresChangeDate}
             />
 
             <TextInput
-              label="Data wymiany hamulców"
+              label="Data wymiany hamulców (opcjonalne)"
               type="date"
+              className="w-full"
               {...register("brakesChangeDate")}
               error={errors.brakesChangeDate}
             />
