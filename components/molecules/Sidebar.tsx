@@ -81,6 +81,9 @@ export const Sidebar = () => {
           <h1 className="text-xl font-bold text-foreground">AIOM</h1>
         </div>
 
+        {/* Mobile header spacer */}
+        <div className="h-16 md:hidden"></div>
+
         {/* Main navigation - grows to fill available space */}
         <div className="flex-grow overflow-y-auto p-4">
           <Nav>

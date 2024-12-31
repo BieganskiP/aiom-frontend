@@ -26,7 +26,6 @@ export const getCars = async (): Promise<Car[]> => {
   }
 
   const data = await response.json();
-  console.log("Cars data:", data); // Debug log
   return data;
 };
 

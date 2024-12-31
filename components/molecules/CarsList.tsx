@@ -85,33 +85,35 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
       )}
 
       <TableWrapper>
-        <table className="w-full min-w-[640px]">
+        <table className="w-full min-w-[800px]">
           <thead>
             <tr className="border-b border-bg-700">
-              <th className="text-left p-4 text-neutral-400 font-medium">
+              <th className="text-left p-4 text-neutral-400 font-medium w-[200px]">
                 Nazwa
               </th>
-              <th className="text-left p-4 text-neutral-400 font-medium">
-                Nr rejestracyjny
+              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
+                Nr rej.
               </th>
-              <th className="text-left p-4 text-neutral-400 font-medium">
+              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
                 Właściciel
               </th>
-              <th className="text-left p-4 text-neutral-400 font-medium">
+              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
                 Status
               </th>
-              <th className="text-left p-4 text-neutral-400 font-medium">
-                Data przeglądu
+              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
+                Przegląd
               </th>
-              <th className="w-10 p-4"></th>
+              <th className="w-[80px] p-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-bg-700">
             {cars.map((car) => (
               <tr key={car.id} className="group">
-                <td className="p-4 text-foreground">{car.name}</td>
-                <td className="p-4 text-foreground">{car.licensePlate}</td>
-                <td className="p-4 text-foreground">
+                <td className="p-4 text-foreground truncate">{car.name}</td>
+                <td className="p-4 text-foreground truncate">
+                  {car.licensePlate}
+                </td>
+                <td className="p-4 text-foreground truncate">
                   {car.owner === CarOwner.OWN_COMPANY ? "Firma" : "Firma matka"}
                 </td>
                 <td className="p-4">
@@ -123,7 +125,7 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                     {getStatusText(car.status)}
                   </span>
                 </td>
-                <td className="p-4 text-foreground">
+                <td className="p-4 text-foreground whitespace-nowrap">
                   {car.checkupDate
                     ? new Date(car.checkupDate).toLocaleDateString()
                     : "-"}
@@ -184,6 +186,13 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                 </td>
               </tr>
             ))}
+            {cars.length === 0 && (
+              <tr>
+                <td colSpan={6} className="p-4 text-center text-neutral-400">
+                  Brak samochodów
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </TableWrapper>

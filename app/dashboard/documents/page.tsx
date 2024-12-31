@@ -143,9 +143,12 @@ export default function DocumentsPage() {
               <Button
                 onClick={() => document.getElementById("image-upload")?.click()}
                 disabled={uploading}
+                size="sm"
+                className="flex items-center gap-2"
               >
-                <Image className="w-5 h-5 mr-2" aria-label="Ikona obrazu" />
-                Dodaj obraz
+                <Image className="w-4 h-4" aria-label="Ikona obrazu" />
+                <span className="hidden sm:inline">Dodaj obraz</span>
+                <span className="sm:hidden">Obraz</span>
               </Button>
             </div>
             <div>
@@ -160,9 +163,12 @@ export default function DocumentsPage() {
               <Button
                 onClick={() => document.getElementById("pdf-upload")?.click()}
                 disabled={uploading}
+                size="sm"
+                className="flex items-center gap-2"
               >
-                <FileText className="w-5 h-5 mr-2" aria-label="Ikona PDF" />
-                Dodaj PDF
+                <FileText className="w-4 h-4" aria-label="Ikona PDF" />
+                <span className="hidden sm:inline">Dodaj PDF</span>
+                <span className="sm:hidden">PDF</span>
               </Button>
             </div>
           </div>

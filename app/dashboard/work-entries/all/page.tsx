@@ -7,6 +7,9 @@ import { getUsers } from "@/services/users";
 import { getRoutes } from "@/services/routes";
 import { getCars } from "@/services/cars";
 import { WorkEntriesList } from "@/components/molecules/WorkEntriesList";
+import { Button } from "@/components/atoms/Button";
+import { Plus } from "lucide-react";
+import { WorkEntryModal } from "@/components/molecules/WorkEntryModal";
 
 export default function AllWorkEntriesPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
@@ -22,6 +25,7 @@ export default function AllWorkEntriesPage() {
     startDate: "",
     endDate: "",
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -63,76 +67,125 @@ export default function AllWorkEntriesPage() {
   return (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-foreground">
             Wszystkie wpisy pracy
           </h1>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Dodaj wpis</span>
+            <span className="sm:hidden">Dodaj</span>
+          </Button>
+        </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 bg-bg-800 p-4 rounded-lg mb-4">
-            <select
-              className="rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
-              value={filters.userId}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, userId: e.target.value }))
-              }
-            >
-              <option value="">Wszyscy kierowcy</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.firstName} {user.lastName}
-                </option>
-              ))}
-            </select>
+        {/* Filters */}
+        <div className="bg-bg-800 rounded-lg p-4 mb-6">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="text-sm font-medium text-neutral-200 mb-1 block">
+                Kierowca
+              </label>
+              <select
+                className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                value={filters.userId || ""}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    userId: e.target.value || undefined,
+                  })
+                }
+              >
+                <option value="">Wszyscy</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.firstName} {user.lastName}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <select
-              className="rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
-              value={filters.routeId}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, routeId: e.target.value }))
-              }
-            >
-              <option value="">Wszystkie trasy</option>
-              {routes.map((route) => (
-                <option key={route.id} value={route.id}>
-                  {route.name}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className="text-sm font-medium text-neutral-200 mb-1 block">
+                Trasa
+              </label>
+              <select
+                className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                value={filters.routeId || ""}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    routeId: e.target.value || undefined,
+                  })
+                }
+              >
+                <option value="">Wszystkie</option>
+                {routes.map((route) => (
+                  <option key={route.id} value={route.id}>
+                    {route.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <select
-              className="rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
-              value={filters.carId}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, carId: e.target.value }))
-              }
-            >
-              <option value="">Wszystkie samochody</option>
-              {cars.map((car) => (
-                <option key={car.id} value={car.id}>
-                  {car.name} ({car.licensePlate})
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className="text-sm font-medium text-neutral-200 mb-1 block">
+                Samochód
+              </label>
+              <select
+                className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                value={filters.carId || ""}
+                onChange={(e) =>
+                  setFilters({ ...filters, carId: e.target.value || undefined })
+                }
+              >
+                <option value="">Wszystkie</option>
+                {cars.map((car) => (
+                  <option key={car.id} value={car.id}>
+                    {car.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <input
-              type="date"
-              className="rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
-              value={filters.startDate}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, startDate: e.target.value }))
-              }
-              placeholder="Data początkowa"
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-neutral-200 mb-1 block">
+                  Data od
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                  value={filters.startDate || ""}
+                  onChange={(e) =>
+                    setFilters({
+                      ...filters,
+                      startDate: e.target.value || undefined,
+                    })
+                  }
+                />
+              </div>
 
-            <input
-              type="date"
-              className="rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
-              value={filters.endDate}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, endDate: e.target.value }))
-              }
-              placeholder="Data końcowa"
-            />
+              <div>
+                <label className="text-sm font-medium text-neutral-200 mb-1 block">
+                  Data do
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                  value={filters.endDate || ""}
+                  onChange={(e) =>
+                    setFilters({
+                      ...filters,
+                      endDate: e.target.value || undefined,
+                    })
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -144,6 +197,12 @@ export default function AllWorkEntriesPage() {
 
         <WorkEntriesList entries={entries} onUpdate={fetchData} />
       </div>
+
+      <WorkEntryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchData}
+      />
     </main>
   );
 }
