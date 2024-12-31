@@ -108,8 +108,8 @@ export const CarModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"
@@ -128,7 +128,7 @@ export const CarModal = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
               label="Nazwa"
               placeholder="Wprowadź nazwę"
@@ -148,7 +148,7 @@ export const CarModal = ({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-neutral-200 mb-1 block">
                 Właściciel
@@ -184,7 +184,7 @@ export const CarModal = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
               label="Data przeglądu"
               type="date"
@@ -200,7 +200,7 @@ export const CarModal = ({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
               label="Data wymiany opon"
               type="date"

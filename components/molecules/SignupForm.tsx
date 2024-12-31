@@ -40,7 +40,7 @@ export const SignupForm = ({ token }: SignupFormProps) => {
     try {
       setError("");
       await signup({ ...data, token });
-      router.push("/login?registered=true");
+      router.push("/");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

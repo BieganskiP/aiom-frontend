@@ -120,3 +120,13 @@ export interface WorkEntriesFilters {
   startDate?: string;
   endDate?: string;
 }
+
+export interface File {
+  id: string;
+  name: string;
+  originalName: string;
+  type: "image" | "pdf";
+  size: number;
+  createdAt: string;
+  url: string;
+}

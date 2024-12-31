@@ -12,7 +12,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -42,34 +42,32 @@ export default function UsersPage() {
     );
   }
 
-  if (error) {
-    return (
-      <main className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
-            {error}
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-foreground">Użytkownicy</h1>
-          <Button onClick={() => setIsInviteModalOpen(true)}>
-            <Plus className="w-5 h-5 mr-2" />
-            Zaproś użytkownika
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Zaproś
           </Button>
         </div>
 
-        <UsersList users={users} onUpdate={fetchUsers} onEdit={fetchUsers} />
+        {error && (
+          <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
+            {error}
+          </div>
+        )}
+
+        <UsersList users={users} onUpdate={fetchUsers} />
 
         <InviteUserModal
-          isOpen={isInviteModalOpen}
-          onClose={() => setIsInviteModalOpen(false)}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           onSuccess={fetchUsers}
         />
       </div>

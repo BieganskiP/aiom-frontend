@@ -5,6 +5,7 @@ import { useState } from "react";
 import { MoreVertical, Pencil, Ban, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { deleteCar, updateCarStatus } from "@/services/cars";
+import { TableWrapper } from "@/components/atoms/TableWrapper";
 
 interface CarsListProps {
   cars: Car[];
@@ -83,8 +84,8 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
         </div>
       )}
 
-      <div className="bg-bg-800 rounded-lg">
-        <table className="w-full">
+      <TableWrapper>
+        <table className="w-full min-w-[640px]">
           <thead>
             <tr className="border-b border-bg-700">
               <th className="text-left p-4 text-neutral-400 font-medium">
@@ -130,9 +131,10 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                 <td className="p-4">
                   <div className="relative">
                     <button
-                      onClick={() =>
-                        setActionCarId(actionCarId === car.id ? null : car.id)
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActionCarId(actionCarId === car.id ? null : car.id);
+                      }}
                       className="p-2 hover:bg-bg-700 rounded-lg"
                       disabled={user?.role !== "admin"}
                     >
@@ -140,7 +142,12 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                     </button>
 
                     {actionCarId === car.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
+                      <div
+                        className="fixed md:absolute right-4 md:right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]"
+                        style={{
+                          top: "auto",
+                        }}
+                      >
                         <button
                           onClick={() => {
                             setActionCarId(null);
@@ -179,7 +186,7 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
             ))}
           </tbody>
         </table>
-      </div>
+      </TableWrapper>
     </div>
   );
 };

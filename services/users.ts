@@ -10,7 +10,7 @@ interface UpdateUserData {
   firstName?: string;
   lastName?: string;
   city?: string;
-  postCode?: string;
+  postCode?: string | null;
   street?: string;
   houseNumber?: string;
   phoneNumber?: string;
