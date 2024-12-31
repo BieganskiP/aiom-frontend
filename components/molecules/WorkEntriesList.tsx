@@ -1,8 +1,6 @@
 "use client";
 
 import { WorkEntry } from "@/types";
-import { format } from "date-fns";
-import { pl } from "date-fns/locale";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { deleteWorkEntry } from "@/services/workEntries";
@@ -11,14 +9,12 @@ import { TableWrapper } from "@/components/atoms/TableWrapper";
 
 interface WorkEntriesListProps {
   entries: WorkEntry[];
-  onUpdate: () => void;
-  onEdit: (entry: WorkEntry) => void;
+  onUpdate: () => Promise<void>;
 }
 
 export const WorkEntriesList = ({
   entries,
   onUpdate,
-  onEdit,
 }: WorkEntriesListProps) => {
   const [error, setError] = useState<string>("");
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
@@ -29,7 +25,7 @@ export const WorkEntriesList = ({
     try {
       setError("");
       await deleteWorkEntry(id);
-      onUpdate();
+      await onUpdate();
     } catch (error) {
       setError("Nie udało się usunąć wpisu");
       console.error(error);

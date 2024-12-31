@@ -95,7 +95,7 @@ export default function AllWorkEntriesPage() {
                 onChange={(e) =>
                   setFilters({
                     ...filters,
-                    userId: e.target.value || undefined,
+                    userId: e.target.value,
                   })
                 }
               >
@@ -118,7 +118,7 @@ export default function AllWorkEntriesPage() {
                 onChange={(e) =>
                   setFilters({
                     ...filters,
-                    routeId: e.target.value || undefined,
+                    routeId: e.target.value,
                   })
                 }
               >
@@ -139,7 +139,7 @@ export default function AllWorkEntriesPage() {
                 className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
                 value={filters.carId || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, carId: e.target.value || undefined })
+                  setFilters({ ...filters, carId: e.target.value })
                 }
               >
                 <option value="">Wszystkie</option>
@@ -163,7 +163,7 @@ export default function AllWorkEntriesPage() {
                   onChange={(e) =>
                     setFilters({
                       ...filters,
-                      startDate: e.target.value || undefined,
+                      startDate: e.target.value,
                     })
                   }
                 />
@@ -180,7 +180,7 @@ export default function AllWorkEntriesPage() {
                   onChange={(e) =>
                     setFilters({
                       ...filters,
-                      endDate: e.target.value || undefined,
+                      endDate: e.target.value,
                     })
                   }
                 />
