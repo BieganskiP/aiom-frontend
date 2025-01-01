@@ -137,6 +137,9 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                 Status
               </th>
               <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
+                Przypisany użytkownik
+              </th>
+              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
                 Przegląd
               </th>
               <th className="w-[80px] p-4"></th>
@@ -160,6 +163,11 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                   >
                     {getStatusText(car.status)}
                   </span>
+                </td>
+                <td className="p-4 text-foreground truncate">
+                  {car.assignedUser
+                    ? `${car.assignedUser.firstName} ${car.assignedUser.lastName}`
+                    : "-"}
                 </td>
                 <td className="p-4 text-foreground whitespace-nowrap">
                   {car.checkupDate
