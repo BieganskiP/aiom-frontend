@@ -33,10 +33,12 @@ export const assignCar = async (
   carId: string,
   assignedUserId: string | null
 ) => {
-  const response = await fetch(`/api/v1/cars/${carId}/assign`, {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/cars/${carId}/assign`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ assignedUserId }),
   });
@@ -47,10 +49,12 @@ export const assignCar = async (
 };
 
 export const unassignCar = async (carId: string) => {
-  const response = await fetch(`/api/v1/cars/${carId}/unassign`, {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/cars/${carId}/unassign`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
 

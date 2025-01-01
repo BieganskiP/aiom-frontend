@@ -93,10 +93,12 @@ export const assignRoute = async (
   routeId: string,
   assignedUserId: string | null
 ) => {
-  const response = await fetch(`/api/v1/routes/${routeId}/assign`, {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/routes/${routeId}/assign`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ assignedUserId }),
   });
@@ -107,10 +109,12 @@ export const assignRoute = async (
 };
 
 export const unassignRoute = async (routeId: string) => {
-  const response = await fetch(`/api/v1/routes/${routeId}/unassign`, {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/routes/${routeId}/unassign`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
 

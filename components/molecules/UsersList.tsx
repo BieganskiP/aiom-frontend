@@ -119,7 +119,9 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
                   </span>
                 </td>
                 <td className="p-4 text-foreground">
-                  {user.paidPerStop.toFixed(2)} zł
+                  {typeof user.paidPerStop === "number"
+                    ? `${user.paidPerStop.toFixed(2)} zł`
+                    : "0.00 zł"}
                 </td>
                 <td className="p-4">
                   {canManageUser(user) && (

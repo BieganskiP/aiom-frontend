@@ -95,6 +95,7 @@ export const WorkEntryModal = ({
         stopsCompleted: parseInt(data.stopsCompleted, 10),
         routeId: data.routeId || undefined,
         carId: data.carId || undefined,
+        userId: user?.id,
       };
 
       if (entry) {
