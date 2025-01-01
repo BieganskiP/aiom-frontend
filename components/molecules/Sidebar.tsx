@@ -87,46 +87,16 @@ export const Sidebar = () => {
         {/* Main navigation - grows to fill available space */}
         <div className="flex-grow overflow-y-auto p-4">
           <Nav>
+            {/* Regular links */}
             <NavItem href="/dashboard" onClick={closeSidebar}>
               <LayoutDashboard size={20} />
               Panel główny
             </NavItem>
 
-            {hasAdminAccess && (
-              <NavItem href="/dashboard/users" onClick={closeSidebar}>
-                <Users size={20} />
-                Użytkownicy
-              </NavItem>
-            )}
-
-            {hasAdminAccess && (
-              <NavItem href="/dashboard/cars" onClick={closeSidebar}>
-                <Car size={20} />
-                Samochody
-              </NavItem>
-            )}
-
-            {hasAdminAccess && (
-              <NavItem href="/dashboard/routes" onClick={closeSidebar}>
-                <Route size={20} />
-                Trasy
-              </NavItem>
-            )}
-
             <NavItem href="/dashboard/work-entries" onClick={closeSidebar}>
               <ClipboardList size={20} />
               Wpisy pracy
             </NavItem>
-
-            {hasAdminAccess && (
-              <NavItem
-                href="/dashboard/work-entries/all"
-                onClick={closeSidebar}
-              >
-                <ClipboardList size={20} />
-                Wszystkie wpisy
-              </NavItem>
-            )}
 
             <NavItem href="/dashboard/documents" onClick={closeSidebar}>
               <FileText size={20} />
@@ -137,6 +107,35 @@ export const Sidebar = () => {
               <Settings size={20} />
               Ustawienia
             </NavItem>
+
+            {/* Admin section */}
+            {hasAdminAccess && (
+              <>
+                <div className="my-2 border-t border-bg-700" />
+                <NavItem href="/dashboard/users" onClick={closeSidebar}>
+                  <Users size={20} />
+                  Użytkownicy
+                </NavItem>
+
+                <NavItem href="/dashboard/cars" onClick={closeSidebar}>
+                  <Car size={20} />
+                  Samochody
+                </NavItem>
+
+                <NavItem href="/dashboard/routes" onClick={closeSidebar}>
+                  <Route size={20} />
+                  Trasy
+                </NavItem>
+
+                <NavItem
+                  href="/dashboard/work-entries/all"
+                  onClick={closeSidebar}
+                >
+                  <ClipboardList size={20} />
+                  Wszystkie wpisy
+                </NavItem>
+              </>
+            )}
           </Nav>
         </div>
 
