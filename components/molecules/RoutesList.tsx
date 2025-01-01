@@ -1,13 +1,18 @@
 "use client";
 
 import { Route, User } from "@/types";
-import { deleteRoute, softDeleteRoute, unassignRoute } from "@/services/routes";
-import { MoreVertical, Pencil, Trash2, Ban, Users } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Pencil, Ban, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  deleteRoute,
+  toggleRouteActive,
+  unassignRoute,
+} from "@/services/routes";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
 import { getUsers } from "@/services/users";
 import { AssignRouteModal } from "./AssignRouteModal";
+import { DropdownMenu } from "@/components/atoms/DropdownMenu";
 
 interface RoutesListProps {
   routes: Route[];
@@ -17,23 +22,22 @@ interface RoutesListProps {
 
 export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
   const { user } = useAuth();
-  const [actionRouteId, setActionRouteId] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [assigningRoute, setAssigningRoute] = useState<{
     routeId: string;
-    name: string;
   } | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const usersData = await getUsers();
-        setUsers(usersData);
+        const data = await getUsers();
+        setUsers(data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error(error);
       }
     };
+
     fetchUsers();
   }, []);
 
@@ -55,7 +59,7 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
 
     try {
       setError("");
-      await softDeleteRoute(id);
+      await toggleRouteActive(id);
       onUpdate();
     } catch (error) {
       setError("Nie udało się dezaktywować trasy");
@@ -72,11 +76,8 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
       await unassignRoute(routeId);
       onUpdate();
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
+      setError("Nie udało się odpiąć trasy");
+      console.error(error);
     }
   };
 
@@ -133,81 +134,52 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
                   </span>
                 </td>
                 <td className="p-4">
-                  <div className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActionRouteId(
-                          actionRouteId === route.id ? null : route.id
-                        );
-                      }}
-                      className="p-2 hover:bg-bg-700 rounded-lg"
-                      disabled={user?.role !== "admin"}
-                    >
-                      <MoreVertical size={20} className="text-neutral-400" />
-                    </button>
-
-                    {actionRouteId === route.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
+                  {user?.role === "admin" && (
+                    <DropdownMenu>
+                      <button
+                        onClick={() => onEdit(route)}
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                      >
+                        <Pencil size={16} />
+                        Edytuj
+                      </button>
+                      {route.assignedUser ? (
                         <button
-                          onClick={() => {
-                            setActionRouteId(null);
-                            onEdit(route);
-                          }}
+                          onClick={() => handleUnassign(route.id)}
                           className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                         >
-                          <Pencil size={16} />
-                          Edytuj
+                          <Users size={16} />
+                          Odepnij kierowcę
                         </button>
-                        {route.assignedUser ? (
-                          <button
-                            onClick={() => {
-                              setActionRouteId(null);
-                              handleUnassign(route.id);
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <Ban size={16} />
-                            Odepnij użytkownika
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setActionRouteId(null);
-                              setAssigningRoute({
-                                routeId: route.id,
-                                name: route.name,
-                              });
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <Users size={16} />
-                            Przypisz użytkownika
-                          </button>
-                        )}
+                      ) : (
                         <button
-                          onClick={() => {
-                            setActionRouteId(null);
-                            handleSoftDelete(route.id);
-                          }}
+                          onClick={() =>
+                            setAssigningRoute({
+                              routeId: route.id,
+                            })
+                          }
                           className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                         >
-                          <Ban size={16} />
-                          Dezaktywuj
+                          <Users size={16} />
+                          Przypisz kierowcę
                         </button>
-                        <button
-                          onClick={() => {
-                            setActionRouteId(null);
-                            handleDelete(route.id);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
-                        >
-                          <Trash2 size={16} />
-                          Usuń
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                      <button
+                        onClick={() => handleSoftDelete(route.id)}
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                      >
+                        <Ban size={16} />
+                        Dezaktywuj
+                      </button>
+                      <button
+                        onClick={() => handleDelete(route.id)}
+                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
+                      >
+                        <Trash2 size={16} />
+                        Usuń
+                      </button>
+                    </DropdownMenu>
+                  )}
                 </td>
               </tr>
             ))}

@@ -2,12 +2,13 @@
 
 import { Car, CarOwner, CarStatus, User } from "@/types";
 import { useState, useEffect } from "react";
-import { MoreVertical, Pencil, Ban, Trash2, Users } from "lucide-react";
+import { Pencil, Ban, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { deleteCar, updateCarStatus, unassignCar } from "@/services/cars";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
 import { getUsers } from "@/services/users";
 import { AssignCarModal } from "./AssignCarModal";
+import { DropdownMenu } from "@/components/atoms/DropdownMenu";
 
 interface CarsListProps {
   cars: Car[];
@@ -17,39 +18,24 @@ interface CarsListProps {
 
 export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
   const { user } = useAuth();
-  const [actionCarId, setActionCarId] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [assigningCar, setAssigningCar] = useState<{
     carId: string;
-    name: string;
   } | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const usersData = await getUsers();
-        setUsers(usersData);
+        const data = await getUsers();
+        setUsers(data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error(error);
       }
     };
+
     fetchUsers();
   }, []);
-
-  const handleSoftDelete = async (id: string) => {
-    try {
-      setError("");
-      await updateCarStatus(id, CarStatus.OUT_OF_SERVICE);
-      onUpdate();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
-    }
-  };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Czy na pewno chcesz usunąć ten samochód?")) return;
@@ -59,11 +45,19 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
       await deleteCar(id);
       onUpdate();
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
+      setError("Nie udało się usunąć samochodu");
+      console.error(error);
+    }
+  };
+
+  const handleStatusChange = async (id: string, status: CarStatus) => {
+    try {
+      setError("");
+      await updateCarStatus(id, status);
+      onUpdate();
+    } catch (error) {
+      setError("Nie udało się zmienić statusu samochodu");
+      console.error(error);
     }
   };
 
@@ -76,24 +70,8 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
       await unassignCar(carId);
       onUpdate();
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
-    }
-  };
-
-  const getStatusColor = (status: CarStatus) => {
-    switch (status) {
-      case CarStatus.AVAILABLE:
-        return "bg-green-500/10 text-green-500";
-      case CarStatus.IN_REPAIR:
-        return "bg-yellow-500/10 text-yellow-500";
-      case CarStatus.OUT_OF_SERVICE:
-        return "bg-error-500/10 text-error-500";
-      default:
-        return "bg-neutral-500/10 text-neutral-500";
+      setError("Nie udało się odpiąć samochodu");
+      console.error(error);
     }
   };
 
@@ -101,14 +79,29 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
     switch (status) {
       case CarStatus.AVAILABLE:
         return "Dostępny";
+      case CarStatus.IN_USE:
+        return "W użyciu";
       case CarStatus.IN_REPAIR:
         return "W naprawie";
       case CarStatus.OUT_OF_SERVICE:
-        return "Wyłączony z użytku";
-      case CarStatus.IN_USE:
-        return "W użyciu";
+        return "Wyłączony";
       default:
-        return status;
+        return "Nieznany";
+    }
+  };
+
+  const getStatusColor = (status: CarStatus) => {
+    switch (status) {
+      case CarStatus.AVAILABLE:
+        return "bg-green-500/10 text-green-500";
+      case CarStatus.IN_USE:
+        return "bg-primary-500/10 text-primary-500";
+      case CarStatus.IN_REPAIR:
+        return "bg-yellow-500/10 text-yellow-500";
+      case CarStatus.OUT_OF_SERVICE:
+        return "bg-neutral-500/10 text-neutral-400";
+      default:
+        return "bg-neutral-500/10 text-neutral-400";
     }
   };
 
@@ -175,89 +168,69 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
                     : "-"}
                 </td>
                 <td className="p-4">
-                  <div className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActionCarId(actionCarId === car.id ? null : car.id);
-                      }}
-                      className="p-2 hover:bg-bg-700 rounded-lg"
-                      disabled={user?.role !== "admin"}
-                    >
-                      <MoreVertical size={20} className="text-neutral-400" />
-                    </button>
-
-                    {actionCarId === car.id && (
-                      <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
+                  {user?.role === "admin" && (
+                    <DropdownMenu>
+                      <button
+                        onClick={() => onEdit(car)}
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                      >
+                        <Pencil size={16} />
+                        Edytuj
+                      </button>
+                      {car.assignedUser ? (
                         <button
-                          onClick={() => {
-                            setActionCarId(null);
-                            onEdit(car);
-                          }}
+                          onClick={() => handleUnassign(car.id)}
                           className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                         >
-                          <Pencil size={16} />
-                          Edytuj
+                          <Users size={16} />
+                          Odepnij kierowcę
                         </button>
-                        {car.assignedUser ? (
-                          <button
-                            onClick={() => {
-                              setActionCarId(null);
-                              handleUnassign(car.id);
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <Ban size={16} />
-                            Odepnij użytkownika
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setActionCarId(null);
-                              setAssigningCar({
-                                carId: car.id,
-                                name: car.name,
-                              });
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <Users size={16} />
-                            Przypisz użytkownika
-                          </button>
-                        )}
+                      ) : (
                         <button
-                          onClick={() => {
-                            setActionCarId(null);
-                            handleSoftDelete(car.id);
-                          }}
+                          onClick={() =>
+                            setAssigningCar({
+                              carId: car.id,
+                            })
+                          }
+                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                        >
+                          <Users size={16} />
+                          Przypisz kierowcę
+                        </button>
+                      )}
+                      {car.status !== CarStatus.OUT_OF_SERVICE ? (
+                        <button
+                          onClick={() =>
+                            handleStatusChange(car.id, CarStatus.OUT_OF_SERVICE)
+                          }
                           className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                         >
                           <Ban size={16} />
-                          Dezaktywuj
+                          Wyłącz z użytku
                         </button>
+                      ) : (
                         <button
-                          onClick={() => {
-                            setActionCarId(null);
-                            handleDelete(car.id);
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
+                          onClick={() =>
+                            handleStatusChange(car.id, CarStatus.AVAILABLE)
+                          }
+                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                         >
-                          <Trash2 size={16} />
-                          Usuń
+                          <Ban size={16} />
+                          Przywróć do użytku
                         </button>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                      <button
+                        onClick={() => handleDelete(car.id)}
+                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
+                      >
+                        <Trash2 size={16} />
+                        Usuń
+                      </button>
+                    </DropdownMenu>
+                  )}
                 </td>
               </tr>
             ))}
-            {cars.length === 0 && (
-              <tr>
-                <td colSpan={6} className="p-4 text-center text-neutral-400">
-                  Brak samochodów
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </TableWrapper>

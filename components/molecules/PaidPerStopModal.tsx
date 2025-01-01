@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { updateUserPaidPerStop } from "@/services/users";
 import { X } from "lucide-react";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface PaidPerStopModalProps {
   isOpen: boolean;
@@ -29,6 +30,10 @@ export const PaidPerStopModal = ({
   userName,
 }: PaidPerStopModalProps) => {
   const [error, setError] = useState<string>("");
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
+
   const {
     register,
     handleSubmit,
@@ -58,7 +63,10 @@ export const PaidPerStopModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
+      <div
+        ref={modalRef}
+        className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"

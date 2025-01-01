@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
@@ -8,6 +8,7 @@ import { updateUser } from "@/services/users";
 import { User } from "@/types";
 import { X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface UserEditModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const UserEditModal = ({
 }: UserEditModalProps) => {
   const { user: currentUser } = useAuth();
   const [error, setError] = useState<string>("");
+  const modalRef = useRef<HTMLDivElement>(null);
   const {
     register,
     handleSubmit,
@@ -80,6 +82,8 @@ export const UserEditModal = ({
     }
   }, [isOpen, user, reset]);
 
+  useClickOutside(modalRef, onClose);
+
   if (!isOpen) return null;
 
   const onSubmit = async (data: UserEditFormData) => {
@@ -99,7 +103,10 @@ export const UserEditModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"

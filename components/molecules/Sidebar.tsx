@@ -74,7 +74,7 @@ export const Sidebar = () => {
       <aside
         className={`${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform fixed md:static inset-y-0 left-0 z-40 md:translate-x-0 w-64 h-screen border-r border-bg-700 flex flex-col bg-bg-800`}
+        } transition-transform fixed md:sticky md:top-0 inset-y-0 left-0 z-40 md:translate-x-0 w-64 h-screen border-r border-bg-700 flex flex-col bg-bg-800`}
       >
         {/* Logo - only show on desktop */}
         <div className="hidden md:block p-4 mb-4">

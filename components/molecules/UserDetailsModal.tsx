@@ -1,8 +1,10 @@
 "use client";
 
+import { useRef } from "react";
 import { User } from "@/types";
 import { X } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface UserDetailsModalProps {
   isOpen: boolean;
@@ -15,11 +17,18 @@ export const UserDetailsModal = ({
   onClose,
   user,
 }: UserDetailsModalProps) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(modalRef, onClose);
+
   if (!isOpen || !user) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
+      <div
+        ref={modalRef}
+        className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"

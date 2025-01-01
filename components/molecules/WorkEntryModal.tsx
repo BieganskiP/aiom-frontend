@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import { getCars } from "@/services/cars";
 import { getRoutes } from "@/services/routes";
 import { useAuth } from "@/contexts/AuthContext";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface WorkEntryModalProps {
   isOpen: boolean;
@@ -31,11 +32,14 @@ export const WorkEntryModal = ({
   onSuccess,
   entry,
 }: WorkEntryModalProps) => {
-  const { user } = useAuth();
   const [error, setError] = useState<string>("");
-  const [routes, setRoutes] = useState<Route[]>([]);
-  const [cars, setCars] = useState<Car[]>([]);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [routes, setRoutes] = useState<Route[]>([]);
+
+  useClickOutside(modalRef, onClose);
 
   const {
     register,
@@ -119,7 +123,7 @@ export const WorkEntryModal = ({
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-bg-800 rounded-lg p-6">
+        <div ref={modalRef} className="bg-bg-800 rounded-lg p-6">
           <div className="text-neutral-400">Ładowanie...</div>
         </div>
       </div>
@@ -128,7 +132,10 @@ export const WorkEntryModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
+      <div
+        ref={modalRef}
+        className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { createCar, updateCar } from "@/services/cars";
 import { Car, CarOwner, CarStatus } from "@/types";
 import { X } from "lucide-react";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface CarModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export const CarModal = ({
   car,
 }: CarModalProps) => {
   const [error, setError] = useState<string>("");
+  const modalRef = useRef<HTMLDivElement>(null);
   const {
     register,
     handleSubmit,
@@ -56,6 +58,8 @@ export const CarModal = ({
           brakesChangeDate: "",
         },
   });
+
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   useEffect(() => {
     if (car) {
@@ -109,7 +113,10 @@ export const CarModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"

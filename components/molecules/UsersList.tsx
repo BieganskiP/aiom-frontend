@@ -2,12 +2,13 @@
 
 import { User } from "@/types";
 import { useState } from "react";
-import { MoreVertical, Pencil, Ban, Trash2, DollarSign } from "lucide-react";
+import { Pencil, Ban, Trash2, DollarSign } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { deleteUser, toggleUserActive } from "@/services/users";
 import { UserEditModal } from "./UserEditModal";
 import { PaidPerStopModal } from "./PaidPerStopModal";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
+import { DropdownMenu } from "@/components/atoms/DropdownMenu";
 
 interface UsersListProps {
   users: User[];
@@ -15,28 +16,20 @@ interface UsersListProps {
 }
 
 export const UsersList = ({ users, onUpdate }: UsersListProps) => {
-  const { user: currentUser } = useAuth();
-  const [actionUserId, setActionUserId] = useState<string | null>(null);
+  const { user } = useAuth();
   const [error, setError] = useState<string>("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [paidPerStopUser, setPaidPerStopUser] = useState<{
     id: string;
-    name: string;
     currentValue: number;
+    name: string;
   } | null>(null);
 
-  const handleToggleActive = async (id: string, active: boolean) => {
-    try {
-      setError("");
-      await toggleUserActive(id, active);
-      onUpdate();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
-    }
+  const canManageUser = (targetUser: User) => {
+    if (!user) return false;
+    if (user.role === "owner") return true;
+    if (user.role === "admin" && targetUser.role !== "owner") return true;
+    return false;
   };
 
   const handleDelete = async (id: string) => {
@@ -47,20 +40,20 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
       await deleteUser(id);
       onUpdate();
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
+      setError("Nie udało się usunąć użytkownika");
+      console.error(error);
     }
   };
 
-  const canManageUser = (user: User) => {
-    if (!currentUser) return false;
-    if (currentUser.role === "owner" && user.role === "admin") return false;
-    if (currentUser.role === "admin") return true;
-    if (currentUser.role === "owner") return true;
-    return false;
+  const handleToggleActive = async (id: string, active: boolean) => {
+    try {
+      setError("");
+      await toggleUserActive(id, !active);
+      onUpdate();
+    } catch (error) {
+      setError("Nie udało się zmienić statusu użytkownika");
+      console.error(error);
+    }
   };
 
   return (
@@ -125,68 +118,42 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
                 </td>
                 <td className="p-4">
                   {canManageUser(user) && (
-                    <div className="relative">
+                    <DropdownMenu>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActionUserId(
-                            actionUserId === user.id ? null : user.id
-                          );
-                        }}
-                        className="p-2 hover:bg-bg-700 rounded-lg"
+                        onClick={() => setEditingUser(user)}
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                       >
-                        <MoreVertical size={20} className="text-neutral-400" />
+                        <Pencil size={16} />
+                        Edytuj
                       </button>
-
-                      {actionUserId === user.id && (
-                        <div className="absolute right-0 mt-2 w-48 bg-bg-800 rounded-lg shadow-lg border border-bg-700 py-1 z-[100]">
-                          <button
-                            onClick={() => {
-                              setActionUserId(null);
-                              setEditingUser(user);
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <Pencil size={16} />
-                            Edytuj
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActionUserId(null);
-                              setPaidPerStopUser({
-                                id: user.id,
-                                name: `${user.firstName} ${user.lastName}`,
-                                currentValue: user.paidPerStop,
-                              });
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <DollarSign size={16} />
-                            Zmień stawkę
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActionUserId(null);
-                              handleToggleActive(user.id, !user.active);
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                          >
-                            <Ban size={16} />
-                            {user.active ? "Dezaktywuj" : "Aktywuj"}
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActionUserId(null);
-                              handleDelete(user.id);
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
-                          >
-                            <Trash2 size={16} />
-                            Usuń
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                      <button
+                        onClick={() =>
+                          setPaidPerStopUser({
+                            id: user.id,
+                            currentValue: user.paidPerStop || 0,
+                            name: `${user.firstName} ${user.lastName}`,
+                          })
+                        }
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                      >
+                        <DollarSign size={16} />
+                        Ustaw stawkę
+                      </button>
+                      <button
+                        onClick={() => handleToggleActive(user.id, user.active)}
+                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                      >
+                        <Ban size={16} />
+                        {user.active ? "Dezaktywuj" : "Aktywuj"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
+                      >
+                        <Trash2 size={16} />
+                        Usuń
+                      </button>
+                    </DropdownMenu>
                   )}
                 </td>
               </tr>

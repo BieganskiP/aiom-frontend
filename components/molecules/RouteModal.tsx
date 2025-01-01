@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { createRoute, updateRoute } from "@/services/routes";
 import { Route } from "@/types";
 import { X } from "lucide-react";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 interface RouteModalProps {
   isOpen: boolean;
@@ -27,12 +28,15 @@ export const RouteModal = ({
   route,
 }: RouteModalProps) => {
   const [error, setError] = useState<string>("");
+  const modalRef = useRef<HTMLDivElement>(null);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<RouteFormData>();
+
+  useClickOutside(modalRef, onClose);
 
   useEffect(() => {
     if (route) {
@@ -72,7 +76,10 @@ export const RouteModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative">
+      <div
+        ref={modalRef}
+        className="bg-bg-800 rounded-lg p-6 w-full max-w-md relative"
+      >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-200"

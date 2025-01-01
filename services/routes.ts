@@ -122,3 +122,17 @@ export const unassignRoute = async (routeId: string) => {
     throw new Error("Nie udało się odpiąć trasy");
   }
 };
+
+export const toggleRouteActive = async (id: string): Promise<void> => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/routes/${id}/soft`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Nie udało się zmienić statusu trasy");
+  }
+};
