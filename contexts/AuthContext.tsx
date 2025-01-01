@@ -4,34 +4,50 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { fetchUserProfile } from "@/services/auth";
 import { usePathname } from "next/navigation";
 import { User } from "@/types";
+import { LoadingScreen } from "@/components/atoms/LoadingScreen";
 
 interface AuthContextType {
   user: User | null;
   refreshUser: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
 
   const refreshUser = async () => {
     try {
       const data = await fetchUserProfile();
       setUser(data);
-    } catch (error) {
+    } catch {
       setUser(null);
     }
   };
 
   useEffect(() => {
-    // Fetch user data when component mounts and when pathname changes
+    const initializeAuth = async () => {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      if (token) {
+        await refreshUser();
+      }
+      setIsLoading(false);
+    };
+
+    initializeAuth();
+  }, []); // Only run on mount
+
+  useEffect(() => {
+    // Fetch user data when pathname changes (but not on initial mount)
     const token = localStorage.getItem("token");
     if (token) {
       refreshUser();
     }
-  }, [pathname]); // Re-fetch when route changes
+  }, [pathname]);
 
   useEffect(() => {
     // Set up periodic refresh (every 5 minutes)
@@ -39,8 +55,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(intervalId);
   }, []);
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, refreshUser }}>
+    <AuthContext.Provider value={{ user, refreshUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
