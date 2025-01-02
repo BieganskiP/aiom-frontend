@@ -11,6 +11,7 @@ import {
   ClipboardList,
   Menu,
   X,
+  Map,
 } from "lucide-react";
 import { Nav, NavItem } from "./Nav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,7 +20,8 @@ import { useState, useEffect } from "react";
 
 export const Sidebar = () => {
   const { user } = useAuth();
-  const hasAdminAccess = user?.role === "admin" || user?.role === "owner";
+  const hasFullAdminAccess = user?.role === "admin" || user?.role === "owner";
+  const hasLeaderAccess = hasFullAdminAccess || user?.role === "leader";
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -108,8 +110,8 @@ export const Sidebar = () => {
               Ustawienia
             </NavItem>
 
-            {/* Admin section */}
-            {hasAdminAccess && (
+            {/* Admin and Leader section */}
+            {hasLeaderAccess && (
               <>
                 <div className="my-2 border-t border-bg-700" />
                 <NavItem href="/dashboard/users" onClick={closeSidebar}>
@@ -117,16 +119,24 @@ export const Sidebar = () => {
                   Użytkownicy
                 </NavItem>
 
-                <NavItem href="/dashboard/cars" onClick={closeSidebar}>
-                  <Car size={20} />
-                  Samochody
-                </NavItem>
-
                 <NavItem href="/dashboard/routes" onClick={closeSidebar}>
                   <Route size={20} />
                   Trasy
                 </NavItem>
+              </>
+            )}
 
+            {/* Full Admin Only section */}
+            {hasFullAdminAccess && (
+              <>
+                <NavItem href="/dashboard/cars" onClick={closeSidebar}>
+                  <Car size={20} />
+                  Samochody
+                </NavItem>
+                <NavItem href="/dashboard/regions" onClick={closeSidebar}>
+                  <Map size={20} />
+                  Regiony
+                </NavItem>{" "}
                 <NavItem
                   href="/dashboard/work-entries/all"
                   onClick={closeSidebar}

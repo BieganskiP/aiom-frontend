@@ -1,6 +1,13 @@
+export enum UserRole {
+  ADMIN = "admin",
+  OWNER = "owner",
+  LEADER = "leader",
+  USER = "user",
+}
+
 export interface User {
   active: boolean;
-  role: string;
+  role: UserRole;
   id: string;
   email: string;
   firstName: string;
@@ -28,14 +35,15 @@ export interface User {
 export interface Route {
   id: string;
   name: string;
-  assignedUserId: string;
+  assignedUserId: string | null;
   description: string;
-
+  regionId: string | null;
+  region?: Region | null;
   createdAt: string;
   updatedAt: string;
   updatedBy: string;
   active: boolean;
-  assignedUser?: User;
+  assignedUser?: User | null;
   updatedByUser?: User;
 }
 
@@ -129,4 +137,17 @@ export interface File {
   size: number;
   createdAt: string;
   url: string;
+}
+
+export interface Region {
+  id: string;
+  name: string;
+  description?: string;
+  leaderId?: string;
+  leader?: User;
+  routes?: Route[];
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+  updatedByUser?: User;
 }

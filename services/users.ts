@@ -143,3 +143,33 @@ export const updateUserPaidPerStop = async (
     );
   }
 };
+
+export const createUser = async (data: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  city: string;
+  postCode: string;
+  street: string;
+  houseNumber: string;
+  phoneNumber: string;
+}): Promise<void> => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message ||
+        `Nie udało się utworzyć użytkownika (${response.status})`
+    );
+  }
+};

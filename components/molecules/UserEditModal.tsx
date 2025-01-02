@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
-import { updateUser } from "@/services/users";
-import { User } from "@/types";
+import { updateUser, createUser } from "@/services/users";
+import { User, UserRole } from "@/types";
 import { X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useClickOutside } from "@/hooks/useClickOutside";
@@ -14,21 +14,19 @@ interface UserEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  user: User;
+  user?: User;
 }
 
 interface UserEditFormData {
-  email: string;
   firstName: string;
   lastName: string;
+  email: string;
+  role: UserRole;
   city: string;
   postCode: string;
   street: string;
   houseNumber: string;
   phoneNumber: string;
-  role: string;
-  active: boolean;
-  paidPerStop: number;
 }
 
 export const UserEditModal = ({
@@ -44,52 +42,47 @@ export const UserEditModal = ({
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<UserEditFormData>({
     defaultValues: {
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      city: user.city,
-      postCode: user.postCode || "",
-      street: user.street,
-      houseNumber: user.houseNumber,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      active: user.active,
-      paidPerStop: user.paidPerStop,
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
+      role: user?.role || UserRole.USER,
+      city: user?.city || "",
+      postCode: user?.postCode || "",
+      street: user?.street || "",
+      houseNumber: user?.houseNumber || "",
+      phoneNumber: user?.phoneNumber || "",
     },
   });
-
-  const currentRole = watch("role");
 
   useEffect(() => {
     if (isOpen) {
       reset({
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        city: user.city,
-        postCode: user.postCode || "",
-        street: user.street,
-        houseNumber: user.houseNumber,
-        phoneNumber: user.phoneNumber,
-        role: user.role,
-        active: user.active,
-        paidPerStop: user.paidPerStop,
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        email: user?.email || "",
+        role: user?.role || UserRole.USER,
+        city: user?.city || "",
+        postCode: user?.postCode || "",
+        street: user?.street || "",
+        houseNumber: user?.houseNumber || "",
+        phoneNumber: user?.phoneNumber || "",
       });
     }
   }, [isOpen, user, reset]);
 
   useClickOutside(modalRef, onClose);
 
-  if (!isOpen) return null;
-
   const onSubmit = async (data: UserEditFormData) => {
     try {
       setError("");
-      await updateUser(user.id, data);
+      if (user) {
+        await updateUser(user.id, data);
+      } else {
+        await createUser(data);
+      }
       onSuccess();
       onClose();
     } catch (error) {
@@ -101,11 +94,19 @@ export const UserEditModal = ({
     }
   };
 
+  if (!isOpen) return null;
+
+  const canEditRole =
+    currentUser?.role === UserRole.ADMIN ||
+    currentUser?.role === UserRole.OWNER;
+  const isOwner = currentUser?.role === UserRole.OWNER;
+  const isAdmin = currentUser?.role === UserRole.ADMIN;
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div
         ref={modalRef}
-        className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto"
+        className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative"
       >
         <button
           onClick={onClose}
@@ -115,7 +116,7 @@ export const UserEditModal = ({
         </button>
 
         <h2 className="text-xl font-bold text-foreground mb-4">
-          Edytuj użytkownika
+          {user ? "Edytuj użytkownika" : "Dodaj użytkownika"}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -125,9 +126,7 @@ export const UserEditModal = ({
             </div>
           )}
 
-          <TextInput label="Email" {...register("email")} disabled />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <TextInput
               label="Imię"
               {...register("firstName", {
@@ -145,113 +144,92 @@ export const UserEditModal = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextInput
-              label="Miasto"
-              {...register("city", {
-                required: "Miasto jest wymagane",
-              })}
-              error={errors.city}
-            />
+          <TextInput
+            label="Email"
+            {...register("email", {
+              required: "Email jest wymagany",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Nieprawidłowy adres email",
+              },
+            })}
+            error={errors.email}
+          />
 
-            <TextInput
-              label="Kod pocztowy"
-              {...register("postCode", {
-                required: "Kod pocztowy jest wymagany",
-              })}
-              error={errors.postCode}
-            />
-          </div>
+          {canEditRole && (
+            <div>
+              <label className="text-sm font-medium text-neutral-200 mb-1 block">
+                Rola
+              </label>
+              <select
+                {...register("role")}
+                className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
+                disabled={!canEditRole}
+              >
+                <option value={UserRole.USER}>Użytkownik</option>
+                <option value={UserRole.LEADER}>Lider</option>
+                {isAdmin && <option value={UserRole.OWNER}>Właściciel</option>}
+                {isOwner && (
+                  <option value={UserRole.ADMIN}>Administrator</option>
+                )}
+              </select>
+            </div>
+          )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextInput
-              label="Ulica"
-              {...register("street", {
-                required: "Ulica jest wymagana",
-              })}
-              error={errors.street}
-            />
+          <TextInput
+            label="Miasto"
+            {...register("city", {
+              required: "Miasto jest wymagane",
+            })}
+            error={errors.city}
+          />
 
-            <TextInput
-              label="Numer domu"
-              {...register("houseNumber", {
-                required: "Numer domu jest wymagany",
-              })}
-              error={errors.houseNumber}
-            />
-          </div>
+          <TextInput
+            label="Kod pocztowy"
+            {...register("postCode", {
+              required: "Kod pocztowy jest wymagany",
+              pattern: {
+                value: /^\d{2}-\d{3}$/,
+                message: "Nieprawidłowy kod pocztowy (XX-XXX)",
+              },
+            })}
+            error={errors.postCode}
+          />
+
+          <TextInput
+            label="Ulica"
+            {...register("street", {
+              required: "Ulica jest wymagana",
+            })}
+            error={errors.street}
+          />
+
+          <TextInput
+            label="Numer domu/mieszkania"
+            {...register("houseNumber", {
+              required: "Numer domu/mieszkania jest wymagany",
+            })}
+            error={errors.houseNumber}
+          />
 
           <TextInput
             label="Numer telefonu"
             {...register("phoneNumber", {
               required: "Numer telefonu jest wymagany",
+              pattern: {
+                value: /^\d{9}$/,
+                message: "Nieprawidłowy numer telefonu (9 cyfr)",
+              },
             })}
             error={errors.phoneNumber}
           />
-
-          {currentUser?.role === "admin" || currentUser?.role === "owner" ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-neutral-200 mb-1 block">
-                    Rola
-                  </label>
-                  <select
-                    className="w-full rounded-lg border bg-bg-700 border-bg-700 px-4 py-2.5 text-foreground"
-                    {...register("role")}
-                    disabled={
-                      (currentUser.role === "owner" && user.role === "admin") ||
-                      (currentUser.role === "admin" && user.role === "owner") ||
-                      (currentUser.role === "admin" && currentRole === "owner")
-                    }
-                  >
-                    <option value="user">Użytkownik</option>
-                    <option value="admin">Administrator</option>
-                    {(currentUser.role === "admin" ||
-                      currentUser.role === "owner") && (
-                      <option value="owner">Właściciel</option>
-                    )}
-                  </select>
-                </div>
-
-                <TextInput
-                  type="number"
-                  step="0.01"
-                  label="Stawka za przystanek"
-                  {...register("paidPerStop", {
-                    required: "Stawka jest wymagana",
-                    min: {
-                      value: 0,
-                      message: "Stawka nie może być ujemna",
-                    },
-                  })}
-                  error={errors.paidPerStop}
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="active"
-                  className="rounded border-bg-700 bg-bg-700 text-primary-500 focus:ring-primary-500"
-                  {...register("active")}
-                />
-                <label
-                  htmlFor="active"
-                  className="text-sm font-medium text-neutral-200"
-                >
-                  Aktywny
-                </label>
-              </div>
-            </>
-          ) : null}
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onClose} type="button">
               Anuluj
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
+              {isSubmitting ? "Zapisywanie..." : "Zapisz"}
             </Button>
           </div>
         </form>

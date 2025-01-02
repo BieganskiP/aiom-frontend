@@ -9,10 +9,10 @@ interface DropdownMenuProps {
   trigger?: React.ReactNode;
 }
 
-interface DropdownItemProps {
+type ReactElementWithProps = React.ReactElement<{
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
-}
+}>;
 
 export const DropdownMenu = ({ children, trigger }: DropdownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,19 +67,45 @@ export const DropdownMenu = ({ children, trigger }: DropdownMenuProps) => {
     setIsOpen(!isOpen);
   };
 
+  const wrapWithClickHandler = (element: ReactElementWithProps) => {
+    return React.cloneElement(element, {
+      onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (element.props.onClick) {
+          element.props.onClick(e);
+        }
+        setIsOpen(false);
+      },
+    });
+  };
+
   // Wrap children with click handlers that close the dropdown
   const wrappedChildren = React.Children.map(children, (child) => {
-    if (React.isValidElement<DropdownItemProps>(child)) {
-      return React.cloneElement(child, {
-        onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
-          if (child.props.onClick) {
-            child.props.onClick(e);
-          }
-          setIsOpen(false);
-        },
-      });
+    if (!React.isValidElement(child)) {
+      return child;
     }
-    return child;
+
+    const element = child as ReactElementWithProps;
+
+    // If it's a Fragment, map over its children
+    if (element.type === React.Fragment) {
+      const fragmentChildren = React.Children.map(
+        element.props.children,
+        (fragmentChild) => {
+          if (!React.isValidElement(fragmentChild)) {
+            return fragmentChild;
+          }
+          return wrapWithClickHandler(fragmentChild as ReactElementWithProps);
+        }
+      );
+      return fragmentChildren;
+    }
+
+    // If it's a regular element with onClick prop
+    if ("onClick" in element.props) {
+      return wrapWithClickHandler(element);
+    }
+
+    return element;
   });
 
   return (

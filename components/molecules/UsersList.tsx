@@ -2,13 +2,14 @@
 
 import { User } from "@/types";
 import { useState } from "react";
-import { Pencil, Ban, Trash2, DollarSign } from "lucide-react";
+import { Pencil, Ban, Trash2, DollarSign, Eye } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { deleteUser, toggleUserActive } from "@/services/users";
 import { UserEditModal } from "./UserEditModal";
 import { PaidPerStopModal } from "./PaidPerStopModal";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
 import { DropdownMenu } from "@/components/atoms/DropdownMenu";
+import { UserDetailsModal } from "./UserDetailsModal";
 
 interface UsersListProps {
   users: User[];
@@ -24,11 +25,26 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
     currentValue: number;
     name: string;
   } | null>(null);
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
 
   const canManageUser = (targetUser: User) => {
     if (!user) return false;
-    if (user.role === "owner") return true;
-    if (user.role === "admin" && targetUser.role !== "owner") return true;
+
+    // Admin can manage ALL users
+    if (user.role === "admin") {
+      return true;
+    }
+
+    // Owner can manage all users except admins
+    if (user.role === "owner") {
+      return targetUser.role !== "admin";
+    }
+
+    // Leader can only manage regular users
+    if (user.role === "leader") {
+      return targetUser.role === "user";
+    }
+
     return false;
   };
 
@@ -117,44 +133,55 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
                     : "0.00 zł"}
                 </td>
                 <td className="p-4">
-                  {canManageUser(user) && (
-                    <DropdownMenu>
-                      <button
-                        onClick={() => setEditingUser(user)}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                      >
-                        <Pencil size={16} />
-                        Edytuj
-                      </button>
-                      <button
-                        onClick={() =>
-                          setPaidPerStopUser({
-                            id: user.id,
-                            currentValue: user.paidPerStop || 0,
-                            name: `${user.firstName} ${user.lastName}`,
-                          })
-                        }
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                      >
-                        <DollarSign size={16} />
-                        Ustaw stawkę
-                      </button>
-                      <button
-                        onClick={() => handleToggleActive(user.id, user.active)}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                      >
-                        <Ban size={16} />
-                        {user.active ? "Dezaktywuj" : "Aktywuj"}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
-                      >
-                        <Trash2 size={16} />
-                        Usuń
-                      </button>
-                    </DropdownMenu>
-                  )}
+                  <DropdownMenu>
+                    <button
+                      onClick={() => setViewingUser(user)}
+                      className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                    >
+                      <Eye size={16} />
+                      Pokaż szczegóły
+                    </button>
+                    {canManageUser(user) && (
+                      <>
+                        <button
+                          onClick={() => setEditingUser(user)}
+                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                        >
+                          <Pencil size={16} />
+                          Edytuj
+                        </button>
+                        <button
+                          onClick={() =>
+                            setPaidPerStopUser({
+                              id: user.id,
+                              currentValue: user.paidPerStop || 0,
+                              name: `${user.firstName} ${user.lastName}`,
+                            })
+                          }
+                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                        >
+                          <DollarSign size={16} />
+                          Ustaw stawkę
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleToggleActive(user.id, user.active)
+                          }
+                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                        >
+                          <Ban size={16} />
+                          {user.active ? "Dezaktywuj" : "Aktywuj"}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
+                        >
+                          <Trash2 size={16} />
+                          Usuń
+                        </button>
+                      </>
+                    )}
+                  </DropdownMenu>
                 </td>
               </tr>
             ))}
@@ -179,6 +206,14 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
           userId={paidPerStopUser.id}
           currentValue={paidPerStopUser.currentValue}
           userName={paidPerStopUser.name}
+        />
+      )}
+
+      {viewingUser && (
+        <UserDetailsModal
+          isOpen={true}
+          onClose={() => setViewingUser(null)}
+          user={viewingUser}
         />
       )}
     </div>

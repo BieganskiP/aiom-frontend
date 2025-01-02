@@ -2,13 +2,9 @@
 
 import { Route, User } from "@/types";
 import { useState, useEffect } from "react";
-import { Pencil, Ban, Trash2, Users } from "lucide-react";
+import { Pencil, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  deleteRoute,
-  toggleRouteActive,
-  unassignRoute,
-} from "@/services/routes";
+import { deleteRoute, unassignRoute } from "@/services/routes";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
 import { getUsers } from "@/services/users";
 import { AssignRouteModal } from "./AssignRouteModal";
@@ -22,6 +18,8 @@ interface RoutesListProps {
 
 export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
   const { user } = useAuth();
+  const canManageRoutes = user?.role === "admin" || user?.role === "owner";
+  const canAssignUsers = canManageRoutes || user?.role === "leader";
   const [error, setError] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [assigningRoute, setAssigningRoute] = useState<{
@@ -54,21 +52,8 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
     }
   };
 
-  const handleSoftDelete = async (id: string) => {
-    if (!window.confirm("Czy na pewno chcesz dezaktywować tę trasę?")) return;
-
-    try {
-      setError("");
-      await toggleRouteActive(id);
-      onUpdate();
-    } catch (error) {
-      setError("Nie udało się dezaktywować trasy");
-      console.error(error);
-    }
-  };
-
   const handleUnassign = async (routeId: string) => {
-    if (!window.confirm("Czy na pewno chcesz odpiąć trasę od użytkownika?"))
+    if (!window.confirm("Czy na pewno chcesz odpiąć użytkownika od trasy?"))
       return;
 
     try {
@@ -76,7 +61,7 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
       await unassignRoute(routeId);
       onUpdate();
     } catch (error) {
-      setError("Nie udało się odpiąć trasy");
+      setError("Nie udało się odpiąć użytkownika od trasy");
       console.error(error);
     }
   };
@@ -93,93 +78,74 @@ export const RoutesList = ({ routes, onUpdate, onEdit }: RoutesListProps) => {
         <table className="w-full min-w-[640px]">
           <thead>
             <tr className="border-b border-bg-700">
-              <th className="text-left p-4 text-sm font-medium text-neutral-400 w-[200px]">
+              <th className="text-left p-4 text-neutral-400 font-medium">
                 Nazwa
               </th>
-              <th className="text-left p-4 text-sm font-medium text-neutral-400 w-[200px]">
-                Przypisany kierowca
+              <th className="text-left p-4 text-neutral-400 font-medium">
+                Opis
               </th>
-              <th className="text-left p-4 text-sm font-medium text-neutral-400 w-[120px]">
-                Status
+              <th className="text-left p-4 text-neutral-400 font-medium">
+                Przypisany użytkownik
               </th>
-              <th className="w-[80px] p-4"></th>
+              <th className="w-10 p-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-bg-700">
             {routes.map((route) => (
               <tr key={route.id} className="group">
-                <td className="p-4">
-                  <div className="font-medium text-foreground truncate">
-                    {route.name}
-                  </div>
-                  <div className="text-sm text-neutral-400 truncate">
-                    {route.description}
-                  </div>
+                <td className="p-4 text-foreground">{route.name}</td>
+                <td className="p-4 text-foreground">
+                  {route.description || "-"}
                 </td>
-
-                <td className="p-4 text-neutral-200 truncate">
+                <td className="p-4 text-foreground">
                   {route.assignedUser
                     ? `${route.assignedUser.firstName} ${route.assignedUser.lastName}`
-                    : "Brak"}
+                    : "-"}
                 </td>
                 <td className="p-4">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      route.active
-                        ? "bg-green-500/10 text-green-500"
-                        : "bg-neutral-500/10 text-neutral-400"
-                    }`}
-                  >
-                    {route.active ? "Aktywna" : "Nieaktywna"}
-                  </span>
-                </td>
-                <td className="p-4">
-                  {user?.role === "admin" && (
-                    <DropdownMenu>
-                      <button
-                        onClick={() => onEdit(route)}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                      >
-                        <Pencil size={16} />
-                        Edytuj
-                      </button>
-                      {route.assignedUser ? (
+                  <DropdownMenu>
+                    {canManageRoutes && (
+                      <>
                         <button
-                          onClick={() => handleUnassign(route.id)}
+                          onClick={() => onEdit(route)}
                           className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
                         >
-                          <Users size={16} />
-                          Odepnij kierowcę
+                          <Pencil size={16} />
+                          Edytuj
                         </button>
-                      ) : (
                         <button
-                          onClick={() =>
-                            setAssigningRoute({
-                              routeId: route.id,
-                            })
-                          }
-                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          onClick={() => handleDelete(route.id)}
+                          className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
                         >
-                          <Users size={16} />
-                          Przypisz kierowcę
+                          <Trash2 size={16} />
+                          Usuń
                         </button>
-                      )}
-                      <button
-                        onClick={() => handleSoftDelete(route.id)}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                      >
-                        <Ban size={16} />
-                        Dezaktywuj
-                      </button>
-                      <button
-                        onClick={() => handleDelete(route.id)}
-                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
-                      >
-                        <Trash2 size={16} />
-                        Usuń
-                      </button>
-                    </DropdownMenu>
-                  )}
+                      </>
+                    )}
+                    {canAssignUsers && (
+                      <>
+                        {route.assignedUser ? (
+                          <button
+                            onClick={() => handleUnassign(route.id)}
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Users size={16} />
+                            Odepnij użytkownika
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              setAssigningRoute({ routeId: route.id })
+                            }
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Users size={16} />
+                            Przypisz użytkownika
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </DropdownMenu>
                 </td>
               </tr>
             ))}
