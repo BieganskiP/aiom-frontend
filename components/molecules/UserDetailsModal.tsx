@@ -132,8 +132,8 @@ export const UserDetailsModal = ({
               <p className="text-foreground">
                 Stawka za przystanek:{" "}
                 <span className="text-primary-500">
-                  {typeof user.paidPerStop === "number"
-                    ? `${user.paidPerStop.toFixed(2)} zł`
+                  {user.paidPerStop
+                    ? `${parseFloat(user.paidPerStop).toFixed(2)} zł`
                     : "0.00 zł"}
                 </span>
               </p>

@@ -22,7 +22,7 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [paidPerStopUser, setPaidPerStopUser] = useState<{
     id: string;
-    currentValue: number;
+    currentValue: string;
     name: string;
   } | null>(null);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
@@ -128,8 +128,8 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
                   </span>
                 </td>
                 <td className="p-4 text-foreground">
-                  {typeof user.paidPerStop === "number"
-                    ? `${user.paidPerStop.toFixed(2)} zł`
+                  {user.paidPerStop
+                    ? `${parseFloat(user.paidPerStop).toFixed(2)} zł`
                     : "0.00 zł"}
                 </td>
                 <td className="p-4">
@@ -154,7 +154,7 @@ export const UsersList = ({ users, onUpdate }: UsersListProps) => {
                           onClick={() =>
                             setPaidPerStopUser({
                               id: user.id,
-                              currentValue: user.paidPerStop || 0,
+                              currentValue: user.paidPerStop || "0.00",
                               name: `${user.firstName} ${user.lastName}`,
                             })
                           }

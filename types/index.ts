@@ -27,7 +27,7 @@ export interface User {
   invitationExpires: string | null;
   passwordResetToken: string | null;
   passwordResetExpires: string | null;
-  paidPerStop: number;
+  paidPerStop: string;
   car?: Car | null;
   route?: Route | null;
 }
@@ -125,8 +125,10 @@ export interface WorkEntriesFilters {
   userId?: string;
   routeId?: string;
   carId?: string;
+  regionId?: string;
   startDate?: string;
   endDate?: string;
+  month?: string;
 }
 
 export interface File {

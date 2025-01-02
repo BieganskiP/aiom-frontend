@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { updateUserPaidPerStop } from "@/services/users";
@@ -13,53 +12,43 @@ interface PaidPerStopModalProps {
   onClose: () => void;
   onSuccess: () => void;
   userId: string;
-  currentValue: number;
+  currentValue: string;
   userName: string;
 }
 
-interface PaidPerStopFormData {
-  paidPerStop: string;
-}
-
-export const PaidPerStopModal = ({
+export function PaidPerStopModal({
   isOpen,
   onClose,
   onSuccess,
   userId,
   currentValue,
   userName,
-}: PaidPerStopModalProps) => {
-  const [error, setError] = useState<string>("");
+}: PaidPerStopModalProps) {
+  const [value, setValue] = useState(currentValue);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
+  useClickOutside(modalRef, onClose);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<PaidPerStopFormData>({
-    defaultValues: {
-      paidPerStop: currentValue.toString(),
-    },
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-  if (!isOpen) return null;
-
-  const onSubmit = async (data: PaidPerStopFormData) => {
     try {
-      setError("");
-      await updateUserPaidPerStop(userId, parseFloat(data.paidPerStop));
+      await updateUserPaidPerStop(userId, parseFloat(value));
       onSuccess();
       onClose();
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Wystąpił nieoczekiwany błąd");
-      }
+      console.error("Failed to update paid per stop:", error);
+      setError("Nie udało się zaktualizować stawki");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -75,45 +64,49 @@ export const PaidPerStopModal = ({
         </button>
 
         <h2 className="text-xl font-bold text-foreground mb-4">
-          Edytuj stawkę za przystanek
+          Ustaw stawkę dla {userName}
         </h2>
-        <p className="text-sm text-neutral-400 mb-4">Użytkownik: {userName}</p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
               {error}
             </div>
           )}
 
-          <TextInput
-            type="number"
-            step="0.01"
-            label="Stawka za przystanek"
-            {...register("paidPerStop", {
-              required: "Stawka jest wymagana",
-              min: {
-                value: 0,
-                message: "Stawka nie może być ujemna",
-              },
-              pattern: {
-                value: /^\d+(\.\d{1,2})?$/,
-                message: "Nieprawidłowy format (max. 2 miejsca po przecinku)",
-              },
-            })}
-            error={errors.paidPerStop}
-          />
+          <div>
+            <label className="block text-sm font-medium text-neutral-400 mb-2">
+              Stawka za przystanek
+            </label>
+            <div className="flex gap-4">
+              <TextInput
+                type="number"
+                step="0.01"
+                min="0"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className="max-w-[200px]"
+                disabled={loading}
+              />
+              <span className="text-neutral-400 self-center">zł</span>
+            </div>
+          </div>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose} type="button">
+          <div className="flex justify-end gap-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              disabled={loading}
+            >
               Anuluj
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Zapisywanie..." : "Zapisz"}
+            <Button type="submit" disabled={loading}>
+              Zapisz
             </Button>
           </div>
         </form>
       </div>
     </div>
   );
-};
+}

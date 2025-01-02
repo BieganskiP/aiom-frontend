@@ -15,6 +15,12 @@ interface ChangePasswordData {
   newPassword: string;
 }
 
+export interface Setting {
+  key: string;
+  value: number;
+  description: string;
+}
+
 export const updateProfile = async (data: UpdateProfileData): Promise<void> => {
   const token = localStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/users/profile`, {
@@ -54,4 +60,47 @@ export const changePassword = async (
       errorData?.message || `Zmiana hasła nie powiodła się (${response.status})`
     );
   }
+};
+
+export const getSettings = async (): Promise<Setting[]> => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/settings`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message || `Nie udało się pobrać ustawień (${response.status})`
+    );
+  }
+
+  return response.json();
+};
+
+export const updateSetting = async (
+  key: string,
+  value: number
+): Promise<Setting> => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE_URL}/settings/${key}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ value }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message ||
+        `Nie udało się zaktualizować ustawienia (${response.status})`
+    );
+  }
+
+  return response.json();
 };
