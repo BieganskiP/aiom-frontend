@@ -54,16 +54,6 @@ export default function AllWorkEntriesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-400">Ładowanie...</div>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
@@ -195,7 +185,11 @@ export default function AllWorkEntriesPage() {
           </div>
         )}
 
-        <WorkEntriesList entries={entries} onUpdate={fetchData} />
+        <WorkEntriesList
+          entries={entries}
+          onUpdate={fetchData}
+          loading={loading}
+        />
       </div>
 
       <WorkEntryModal

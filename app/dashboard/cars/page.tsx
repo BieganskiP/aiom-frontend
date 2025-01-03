@@ -13,7 +13,6 @@ export default function CarsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCar, setEditingCar] = useState<Car | null>(null);
 
   const fetchCars = async () => {
     try {
@@ -32,26 +31,6 @@ export default function CarsPage() {
   useEffect(() => {
     fetchCars();
   }, []);
-
-  const handleEdit = (car: Car) => {
-    setEditingCar(car);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setEditingCar(null);
-    setIsModalOpen(false);
-  };
-
-  if (loading) {
-    return (
-      <main className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-400">Ładowanie...</div>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-screen p-4">
@@ -75,13 +54,12 @@ export default function CarsPage() {
           </div>
         )}
 
-        <CarsList cars={cars} onUpdate={fetchCars} onEdit={handleEdit} />
+        <CarsList cars={cars} onUpdate={fetchCars} loading={loading} />
 
         <CarModal
           isOpen={isModalOpen}
-          onClose={handleCloseModal}
+          onClose={() => setIsModalOpen(false)}
           onSuccess={fetchCars}
-          car={editingCar}
         />
       </div>
     </main>

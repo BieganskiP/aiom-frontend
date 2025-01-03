@@ -5,20 +5,21 @@ import { useState, useEffect } from "react";
 import { Pencil, Ban, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { deleteCar, updateCarStatus, unassignCar } from "@/services/cars";
-import { TableWrapper } from "@/components/atoms/TableWrapper";
 import { getUsers } from "@/services/users";
 import { AssignCarModal } from "./AssignCarModal";
 import { DropdownMenu } from "@/components/atoms/DropdownMenu";
+import { CarModal } from "./CarModal";
 
 interface CarsListProps {
   cars: Car[];
   onUpdate: () => void;
-  onEdit: (car: Car) => void;
+  loading?: boolean;
 }
 
-export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
+export function CarsList({ cars, onUpdate, loading }: CarsListProps) {
   const { user } = useAuth();
   const [error, setError] = useState<string>("");
+  const [editingCar, setEditingCar] = useState<Car | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [assigningCar, setAssigningCar] = useState<{
     carId: string;
@@ -113,127 +114,155 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
         </div>
       )}
 
-      <TableWrapper>
-        <table className="w-full min-w-[800px]">
-          <thead>
-            <tr className="border-b border-bg-700">
-              <th className="text-left p-4 text-neutral-400 font-medium w-[200px]">
-                Nazwa
-              </th>
-              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
-                Nr rej.
-              </th>
-              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
-                Właściciel
-              </th>
-              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
-                Status
-              </th>
-              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
-                Przypisany użytkownik
-              </th>
-              <th className="text-left p-4 text-neutral-400 font-medium w-[120px]">
-                Przegląd
-              </th>
-              <th className="w-[80px] p-4"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-bg-700">
-            {cars.map((car) => (
-              <tr key={car.id} className="group">
-                <td className="p-4 text-foreground truncate">{car.name}</td>
-                <td className="p-4 text-foreground truncate">
-                  {car.licensePlate}
-                </td>
-                <td className="p-4 text-foreground truncate">
-                  {car.owner === CarOwner.OWN_COMPANY ? "Firma" : "Firma matka"}
-                </td>
-                <td className="p-4">
-                  <span
-                    className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusColor(
-                      car.status
-                    )}`}
-                  >
-                    {getStatusText(car.status)}
-                  </span>
-                </td>
-                <td className="p-4 text-foreground truncate">
-                  {car.assignedUser
-                    ? `${car.assignedUser.firstName} ${car.assignedUser.lastName}`
-                    : "-"}
-                </td>
-                <td className="p-4 text-foreground whitespace-nowrap">
-                  {car.checkupDate
-                    ? new Date(car.checkupDate).toLocaleDateString()
-                    : "-"}
-                </td>
-                <td className="p-4">
-                  {user?.role === "admin" && (
-                    <DropdownMenu>
-                      <button
-                        onClick={() => onEdit(car)}
-                        className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                      >
-                        <Pencil size={16} />
-                        Edytuj
-                      </button>
-                      {car.assignedUser ? (
-                        <button
-                          onClick={() => handleUnassign(car.id)}
-                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                        >
-                          <Users size={16} />
-                          Odepnij kierowcę
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            setAssigningCar({
-                              carId: car.id,
-                            })
-                          }
-                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                        >
-                          <Users size={16} />
-                          Przypisz kierowcę
-                        </button>
-                      )}
-                      {car.status !== CarStatus.OUT_OF_SERVICE ? (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(car.id, CarStatus.OUT_OF_SERVICE)
-                          }
-                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                        >
-                          <Ban size={16} />
-                          Wyłącz z użytku
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(car.id, CarStatus.AVAILABLE)
-                          }
-                          className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
-                        >
-                          <Ban size={16} />
-                          Przywróć do użytku
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDelete(car.id)}
-                        className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
-                      >
-                        <Trash2 size={16} />
-                        Usuń
-                      </button>
-                    </DropdownMenu>
-                  )}
-                </td>
+      <div className="bg-bg-800 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-bg-700">
+                <th className="text-left p-4 text-sm font-medium text-neutral-400">
+                  Nazwa
+                </th>
+                <th className="text-left p-4 text-sm font-medium text-neutral-400">
+                  Nr rejestracyjny
+                </th>
+                <th className="text-left p-4 text-sm font-medium text-neutral-400">
+                  Status
+                </th>
+                <th className="text-left p-4 text-sm font-medium text-neutral-400">
+                  Właściciel
+                </th>
+                <th className="text-left p-4 text-sm font-medium text-neutral-400">
+                  Kierowca
+                </th>
+                <th className="text-right p-4 text-sm font-medium text-neutral-400">
+                  Akcje
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </TableWrapper>
+            </thead>
+            <tbody className="relative">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-4 text-center text-neutral-400">
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-2 h-2 bg-neutral-400 rounded-full animate-bounce"></div>
+                    </div>
+                  </td>
+                </tr>
+              ) : cars.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-4 text-center text-neutral-400">
+                    Brak samochodów
+                  </td>
+                </tr>
+              ) : (
+                cars.map((car) => (
+                  <tr key={car.id} className="group">
+                    <td className="p-4 text-foreground truncate">{car.name}</td>
+                    <td className="p-4 text-foreground truncate">
+                      {car.licensePlate}
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusColor(
+                          car.status
+                        )}`}
+                      >
+                        {getStatusText(car.status)}
+                      </span>
+                    </td>
+                    <td className="p-4 text-foreground truncate">
+                      {car.owner === CarOwner.OWN_COMPANY
+                        ? "Firma"
+                        : "Firma matka"}
+                    </td>
+                    <td className="p-4 text-foreground truncate">
+                      {car.assignedUser
+                        ? `${car.assignedUser.firstName} ${car.assignedUser.lastName}`
+                        : "-"}
+                    </td>
+                    <td className="p-4">
+                      {user?.role === "admin" && (
+                        <DropdownMenu>
+                          <button
+                            onClick={() => setEditingCar(car)}
+                            className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                          >
+                            <Pencil size={16} />
+                            Edytuj
+                          </button>
+                          {car.assignedUser ? (
+                            <button
+                              onClick={() => handleUnassign(car.id)}
+                              className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                            >
+                              <Users size={16} />
+                              Odepnij kierowcę
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                setAssigningCar({
+                                  carId: car.id,
+                                })
+                              }
+                              className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                            >
+                              <Users size={16} />
+                              Przypisz kierowcę
+                            </button>
+                          )}
+                          {car.status !== CarStatus.OUT_OF_SERVICE ? (
+                            <button
+                              onClick={() =>
+                                handleStatusChange(
+                                  car.id,
+                                  CarStatus.OUT_OF_SERVICE
+                                )
+                              }
+                              className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                            >
+                              <Ban size={16} />
+                              Wyłącz z użytku
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                handleStatusChange(car.id, CarStatus.AVAILABLE)
+                              }
+                              className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-bg-700 flex items-center gap-2"
+                            >
+                              <Ban size={16} />
+                              Przywróć do użytku
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDelete(car.id)}
+                            className="w-full px-4 py-2 text-left text-sm text-error-500 hover:bg-error-500/10 flex items-center gap-2"
+                          >
+                            <Trash2 size={16} />
+                            Usuń
+                          </button>
+                        </DropdownMenu>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {editingCar && (
+        <CarModal
+          isOpen={true}
+          onClose={() => setEditingCar(null)}
+          onSuccess={onUpdate}
+          car={editingCar}
+        />
+      )}
 
       {assigningCar && (
         <AssignCarModal
@@ -246,4 +275,4 @@ export const CarsList = ({ cars, onUpdate, onEdit }: CarsListProps) => {
       )}
     </div>
   );
-};
+}

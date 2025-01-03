@@ -82,9 +82,12 @@ export default function DashboardPage() {
     (sum, entry) => sum + entry.stopsCompleted,
     0
   );
-  const userRate = user?.paidPerStop ? Number(user.paidPerStop) : 0;
-  const personalTotalEarnings = personalEntries.reduce(
-    (sum, entry) => sum + entry.stopsCompleted * userRate,
+  const personalTotalRevenue = personalEntries.reduce(
+    (sum, entry) => sum + (entry.totalRevenue || 0),
+    0
+  );
+  const personalTotalPay = personalEntries.reduce(
+    (sum, entry) => sum + (entry.driverPay || 0),
     0
   );
   const personalAverageStopsPerDay =
@@ -97,39 +100,60 @@ export default function DashboardPage() {
     (sum, entry) => sum + entry.stopsCompleted,
     0
   );
-  const managedTotalEarnings = managedEntries.reduce((sum, entry) => {
-    const rate = entry.user?.paidPerStop ? Number(entry.user.paidPerStop) : 0;
-    return sum + entry.stopsCompleted * rate;
-  }, 0);
+  const managedTotalRevenue = managedEntries.reduce(
+    (sum, entry) => sum + (entry.totalRevenue || 0),
+    0
+  );
+  const managedTotalProfit = managedEntries.reduce(
+    (sum, entry) => sum + (entry.companyProfit || 0),
+    0
+  );
   const managedAverageStopsPerDay =
     managedEntries.length > 0
       ? Math.round(managedTotalStops / managedEntries.length)
       : 0;
 
-  // Prepare data for personal daily stops chart
+  // Prepare data for personal daily stats chart
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(new Date()),
     end: endOfMonth(new Date()),
   });
 
-  const personalDailyStopsData = daysInMonth.map((date) => {
+  const personalDailyStatsData = daysInMonth.map((date) => {
     const dayEntries = personalEntries.filter(
       (e) => e.workDate.split("T")[0] === format(date, "yyyy-MM-dd")
     );
     return {
       date: format(date, "d MMM", { locale: pl }),
       stops: dayEntries.reduce((sum, entry) => sum + entry.stopsCompleted, 0),
+      revenue: dayEntries.reduce(
+        (sum, entry) => sum + (entry.totalRevenue || 0),
+        0
+      ),
+      pay: dayEntries.reduce((sum, entry) => sum + (entry.driverPay || 0), 0),
     };
   });
 
-  // Prepare data for managed daily stops chart
-  const managedDailyStopsData = daysInMonth.map((date) => {
+  // Prepare data for managed daily stats chart
+  const managedDailyStatsData = daysInMonth.map((date) => {
     const dayEntries = managedEntries.filter(
       (e) => e.workDate.split("T")[0] === format(date, "yyyy-MM-dd")
     );
     return {
       date: format(date, "d MMM", { locale: pl }),
       stops: dayEntries.reduce((sum, entry) => sum + entry.stopsCompleted, 0),
+      revenue: dayEntries.reduce(
+        (sum, entry) => sum + (entry.totalRevenue || 0),
+        0
+      ),
+      driverPay: dayEntries.reduce(
+        (sum, entry) => sum + (entry.driverPay || 0),
+        0
+      ),
+      profit: dayEntries.reduce(
+        (sum, entry) => sum + (entry.companyProfit || 0),
+        0
+      ),
     };
   });
 
@@ -143,16 +167,11 @@ export default function DashboardPage() {
             acc[userId] = {
               name: `${entry.user.firstName} ${entry.user.lastName}`,
               stops: 0,
-              earnings: 0,
             };
           }
-          const rate = entry.user.paidPerStop
-            ? Number(entry.user.paidPerStop)
-            : 0;
           acc[userId].stops += entry.stopsCompleted;
-          acc[userId].earnings += entry.stopsCompleted * rate;
           return acc;
-        }, {} as Record<string, { name: string; stops: number; earnings: number }>)
+        }, {} as Record<string, { name: string; stops: number }>)
       )
     : [];
 
@@ -183,7 +202,7 @@ export default function DashboardPage() {
       {/* Personal Statistics Section */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Twoje statystyki</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-bg-800 p-6 rounded-lg">
             <h3 className="text-sm font-medium text-neutral-400 mb-2">
               Łączna liczba przystanków
@@ -202,21 +221,29 @@ export default function DashboardPage() {
           </div>
           <div className="bg-bg-800 p-6 rounded-lg">
             <h3 className="text-sm font-medium text-neutral-400 mb-2">
-              Łączna kwota
+              Przychód
             </h3>
             <p className="text-3xl font-bold text-foreground">
-              {personalTotalEarnings.toFixed(2)} zł
+              {personalTotalRevenue.toFixed(2)} zł
+            </p>
+          </div>
+          <div className="bg-bg-800 p-6 rounded-lg">
+            <h3 className="text-sm font-medium text-neutral-400 mb-2">
+              Wypłata
+            </h3>
+            <p className="text-3xl font-bold text-foreground">
+              {personalTotalPay.toFixed(2)} zł
             </p>
           </div>
         </div>
 
         <div className="mt-6 bg-bg-800 p-6 rounded-lg">
           <h3 className="text-lg font-semibold mb-4">
-            Twoja dzienna liczba przystanków
+            Twoje dzienne statystyki
           </h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={personalDailyStopsData}>
+              <LineChart data={personalDailyStatsData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis
                   dataKey="date"
@@ -235,7 +262,22 @@ export default function DashboardPage() {
                 <Line
                   type="monotone"
                   dataKey="stops"
+                  name="Przystanki"
                   stroke="#3B82F6"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Przychód"
+                  stroke="#10B981"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="pay"
+                  name="Wypłata"
+                  stroke="#F59E0B"
                   strokeWidth={2}
                 />
               </LineChart>
@@ -250,7 +292,7 @@ export default function DashboardPage() {
           <h2 className="text-xl font-semibold mb-4">
             {isAdmin ? "Statystyki firmy" : "Statystyki regionu"}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-bg-800 p-6 rounded-lg">
               <h3 className="text-sm font-medium text-neutral-400 mb-2">
                 Łączna liczba przystanków
@@ -269,10 +311,18 @@ export default function DashboardPage() {
             </div>
             <div className="bg-bg-800 p-6 rounded-lg">
               <h3 className="text-sm font-medium text-neutral-400 mb-2">
-                Łączna kwota
+                Przychód
               </h3>
               <p className="text-3xl font-bold text-foreground">
-                {managedTotalEarnings.toFixed(2)} zł
+                {managedTotalRevenue.toFixed(2)} zł
+              </p>
+            </div>
+            <div className="bg-bg-800 p-6 rounded-lg">
+              <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                Zysk firmy
+              </h3>
+              <p className="text-3xl font-bold text-foreground">
+                {managedTotalProfit.toFixed(2)} zł
               </p>
             </div>
           </div>
@@ -280,12 +330,12 @@ export default function DashboardPage() {
           <div className="mt-6 bg-bg-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold mb-4">
               {isAdmin
-                ? "Dzienna liczba przystanków w firmie"
-                : "Dzienna liczba przystanków w regionie"}
+                ? "Dzienne statystyki firmy"
+                : "Dzienne statystyki regionu"}
             </h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={managedDailyStopsData}>
+                <LineChart data={managedDailyStatsData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis
                     dataKey="date"
@@ -304,7 +354,22 @@ export default function DashboardPage() {
                   <Line
                     type="monotone"
                     dataKey="stops"
+                    name="Przystanki"
                     stroke="#3B82F6"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    name="Przychód"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="profit"
+                    name="Zysk"
+                    stroke="#EC4899"
                     strokeWidth={2}
                   />
                 </LineChart>
@@ -336,7 +401,7 @@ export default function DashboardPage() {
                       }}
                       labelStyle={{ color: "#9CA3AF" }}
                     />
-                    <Bar dataKey="stops" fill="#3B82F6" />
+                    <Bar dataKey="stops" name="Przystanki" fill="#3B82F6" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

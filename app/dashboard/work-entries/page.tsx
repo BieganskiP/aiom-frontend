@@ -22,8 +22,8 @@ export default function WorkEntriesPage() {
 
   const fetchEntries = useCallback(async () => {
     try {
-      setError("");
       setLoading(true);
+      setError("");
       const data = await getMyWorkEntries(selectedMonth);
       setEntries(data);
     } catch (error) {
@@ -40,16 +40,6 @@ export default function WorkEntriesPage() {
   useEffect(() => {
     fetchEntries();
   }, [fetchEntries]);
-
-  if (loading) {
-    return (
-      <main className="min-h-screen p-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-neutral-400">Ładowanie...</div>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-screen p-4">
@@ -79,7 +69,11 @@ export default function WorkEntriesPage() {
           </div>
         )}
 
-        <WorkEntriesList entries={entries} onUpdate={fetchEntries} />
+        <WorkEntriesList
+          entries={entries}
+          onUpdate={fetchEntries}
+          loading={loading}
+        />
 
         <WorkEntryModal
           isOpen={isModalOpen}

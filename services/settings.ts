@@ -1,3 +1,5 @@
+import { Setting, SettingKey } from "@/types/settings";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface UpdateProfileData {
@@ -13,12 +15,6 @@ interface UpdateProfileData {
 interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
-}
-
-export interface Setting {
-  key: string;
-  value: number;
-  description: string;
 }
 
 export const updateProfile = async (data: UpdateProfileData): Promise<void> => {
@@ -81,8 +77,8 @@ export const getSettings = async (): Promise<Setting[]> => {
 };
 
 export const updateSetting = async (
-  key: string,
-  value: number
+  key: SettingKey,
+  value: number | string
 ): Promise<Setting> => {
   const token = localStorage.getItem("token");
   const response = await fetch(`${API_BASE_URL}/settings/${key}`, {

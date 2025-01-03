@@ -4,25 +4,30 @@ import { useState, useEffect } from "react";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { getSettings, updateSetting } from "@/services/settings";
+import { SettingKey, isNumericSetting } from "@/types/settings";
 
 interface FormData {
-  company_rate_per_stop: number;
-  company_car_rate: number;
+  [SettingKey.COMPANY_RATE_PER_STOP]: number;
+  [SettingKey.COMPANY_CAR_RATE]: number;
+  [SettingKey.PARENT_COMPANY_DISPLAY_NAME]: string;
+  [SettingKey.OWN_COMPANY_DISPLAY_NAME]: string;
 }
 
 export function SettingsForm() {
   const [formData, setFormData] = useState<FormData>({
-    company_rate_per_stop: 0,
-    company_car_rate: 0,
+    [SettingKey.COMPANY_RATE_PER_STOP]: 0,
+    [SettingKey.COMPANY_CAR_RATE]: 0,
+    [SettingKey.PARENT_COMPANY_DISPLAY_NAME]: "",
+    [SettingKey.OWN_COMPANY_DISPLAY_NAME]: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (key: keyof FormData, value: string) => {
+  const handleChange = (key: SettingKey, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [key]: parseFloat(value) || 0,
+      [key]: isNumericSetting(key) ? parseFloat(value) || 0 : value,
     }));
     setSuccess(false);
   };
@@ -35,10 +40,11 @@ export function SettingsForm() {
 
     try {
       // Update all settings in parallel
-      await Promise.all([
-        updateSetting("company_rate_per_stop", formData.company_rate_per_stop),
-        updateSetting("company_car_rate", formData.company_car_rate),
-      ]);
+      await Promise.all(
+        Object.entries(formData).map(([key, value]) =>
+          updateSetting(key as SettingKey, value)
+        )
+      );
       setSuccess(true);
     } catch (error) {
       console.error("Failed to update settings:", error);
@@ -53,10 +59,23 @@ export function SettingsForm() {
       try {
         const settings = await getSettings();
         const initialData: FormData = {
-          company_rate_per_stop:
-            settings.find((s) => s.key === "company_rate_per_stop")?.value || 0,
-          company_car_rate:
-            settings.find((s) => s.key === "company_car_rate")?.value || 0,
+          [SettingKey.COMPANY_RATE_PER_STOP]:
+            Number(
+              settings.find((s) => s.key === SettingKey.COMPANY_RATE_PER_STOP)
+                ?.value
+            ) || 0,
+          [SettingKey.COMPANY_CAR_RATE]:
+            Number(
+              settings.find((s) => s.key === SettingKey.COMPANY_CAR_RATE)?.value
+            ) || 0,
+          [SettingKey.PARENT_COMPANY_DISPLAY_NAME]:
+            settings
+              .find((s) => s.key === SettingKey.PARENT_COMPANY_DISPLAY_NAME)
+              ?.value?.toString() || "",
+          [SettingKey.OWN_COMPANY_DISPLAY_NAME]:
+            settings
+              .find((s) => s.key === SettingKey.OWN_COMPANY_DISPLAY_NAME)
+              ?.value?.toString() || "",
         };
         setFormData(initialData);
       } catch (error) {
@@ -95,9 +114,9 @@ export function SettingsForm() {
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.company_rate_per_stop}
+                value={formData[SettingKey.COMPANY_RATE_PER_STOP]}
                 onChange={(e) =>
-                  handleChange("company_rate_per_stop", e.target.value)
+                  handleChange(SettingKey.COMPANY_RATE_PER_STOP, e.target.value)
                 }
                 className="max-w-[200px]"
                 disabled={loading}
@@ -116,15 +135,51 @@ export function SettingsForm() {
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.company_car_rate}
+                value={formData[SettingKey.COMPANY_CAR_RATE]}
                 onChange={(e) =>
-                  handleChange("company_car_rate", e.target.value)
+                  handleChange(SettingKey.COMPANY_CAR_RATE, e.target.value)
                 }
                 className="max-w-[200px]"
                 disabled={loading}
               />
               <span className="text-neutral-400 self-center">zł</span>
             </div>
+          </div>
+
+          {/* Parent Company Display Name */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-400 mb-2">
+              Nazwa firmy (rodzic)
+            </label>
+            <TextInput
+              value={formData[SettingKey.PARENT_COMPANY_DISPLAY_NAME]}
+              onChange={(e) =>
+                handleChange(
+                  SettingKey.PARENT_COMPANY_DISPLAY_NAME,
+                  e.target.value
+                )
+              }
+              className="max-w-[200px]"
+              disabled={loading}
+            />
+          </div>
+
+          {/* Own Company Display Name */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-400 mb-2">
+              Nazwa firmy (własna)
+            </label>
+            <TextInput
+              value={formData[SettingKey.OWN_COMPANY_DISPLAY_NAME]}
+              onChange={(e) =>
+                handleChange(
+                  SettingKey.OWN_COMPANY_DISPLAY_NAME,
+                  e.target.value
+                )
+              }
+              className="max-w-[200px]"
+              disabled={loading}
+            />
           </div>
 
           <div className="pt-4">

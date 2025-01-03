@@ -181,8 +181,9 @@ export const WorkEntryModal = ({
               Trasa
             </label>
             <select
-              className="mt-1 w-full rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
+              className="mt-1 w-full rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground disabled:opacity-50"
               {...register("routeId")}
+              disabled={!!user?.routeId}
             >
               <option value="">Brak trasy</option>
               {routes.map((route) => (
@@ -191,6 +192,11 @@ export const WorkEntryModal = ({
                 </option>
               ))}
             </select>
+            {user?.routeId && (
+              <p className="mt-1 text-xs text-neutral-400">
+                Masz przypisaną trasę, nie możesz jej zmienić
+              </p>
+            )}
           </div>
 
           <div>
@@ -198,8 +204,9 @@ export const WorkEntryModal = ({
               Samochód
             </label>
             <select
-              className="mt-1 w-full rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground"
+              className="mt-1 w-full rounded-lg border bg-bg-700 border-bg-700 px-3 py-2 text-sm text-foreground disabled:opacity-50"
               {...register("carId")}
+              disabled={!!user?.carId}
             >
               <option value="">Brak samochodu</option>
               {cars.map((car) => (
@@ -208,6 +215,11 @@ export const WorkEntryModal = ({
                 </option>
               ))}
             </select>
+            {user?.carId && (
+              <p className="mt-1 text-xs text-neutral-400">
+                Masz przypisany samochód, nie możesz go zmienić
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end gap-2">

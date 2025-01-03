@@ -7,7 +7,6 @@ import { Button } from "@/components/atoms/Button";
 import { UsersList } from "@/components/molecules/UsersList";
 import { InviteUserModal } from "@/components/molecules/InviteUserModal";
 import { Plus } from "lucide-react";
-import { UsersListSkeleton } from "@/components/skeletons/UsersListSkeleton";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -33,10 +32,6 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
-  if (loading) {
-    return <UsersListSkeleton />;
-  }
-
   return (
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
@@ -58,7 +53,7 @@ export default function UsersPage() {
           </div>
         )}
 
-        <UsersList users={users} onUpdate={fetchUsers} />
+        <UsersList users={users} onUpdate={fetchUsers} loading={loading} />
 
         <InviteUserModal
           isOpen={isModalOpen}

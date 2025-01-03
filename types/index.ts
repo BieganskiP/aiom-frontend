@@ -112,6 +112,9 @@ export interface WorkEntry {
   route?: Route;
   car?: Car;
   user?: User;
+  totalRevenue: number;
+  driverPay: number;
+  companyProfit: number;
 }
 
 export interface CreateWorkEntryData {
