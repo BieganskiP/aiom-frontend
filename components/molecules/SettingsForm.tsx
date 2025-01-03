@@ -144,7 +144,7 @@ export function SettingsForm({ initialSettings }: Props) {
           {/* Company Car Rate */}
           <div>
             <label className="block text-sm font-medium text-neutral-400 mb-2">
-              Stawka za samochód (Samochód własny)
+              Stawka za stopa (Samochód własny)
             </label>
             <div className="flex gap-4">
               <TextInput

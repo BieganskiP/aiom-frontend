@@ -38,19 +38,6 @@ export default function RegionsPage() {
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.role]);
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="h-8 w-48 bg-bg-700 rounded animate-pulse mb-6" />
-        <div className="space-y-4">
-          <div className="h-12 bg-bg-700 rounded animate-pulse" />
-          <div className="h-12 bg-bg-700 rounded animate-pulse" />
-          <div className="h-12 bg-bg-700 rounded animate-pulse" />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -73,6 +60,7 @@ export default function RegionsPage() {
         regions={regions}
         onUpdate={fetchRegions}
         onEdit={setEditingRegion}
+        loading={loading}
       />
 
       <RegionEditModal
