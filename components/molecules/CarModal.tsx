@@ -9,11 +9,17 @@ import { Car, CarOwner, CarStatus } from "@/types";
 import { X } from "lucide-react";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
+interface CompanyNames {
+  parent: string;
+  own: string;
+}
+
 interface CarModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   car?: Car | null;
+  companyNames: CompanyNames;
 }
 
 interface CarFormData {
@@ -32,6 +38,7 @@ export const CarModal = ({
   onClose,
   onSuccess,
   car,
+  companyNames,
 }: CarModalProps) => {
   const [error, setError] = useState<string>("");
   const modalRef = useRef<HTMLDivElement>(null);
@@ -166,8 +173,10 @@ export const CarModal = ({
                   required: "Właściciel jest wymagany",
                 })}
               >
-                <option value={CarOwner.OWN_COMPANY}>Firma własna</option>
-                <option value={CarOwner.PARENT_COMPANY}>Firma matka</option>
+                <option value={CarOwner.OWN_COMPANY}>{companyNames.own}</option>
+                <option value={CarOwner.PARENT_COMPANY}>
+                  {companyNames.parent}
+                </option>
               </select>
             </div>
 

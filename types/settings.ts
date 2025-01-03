@@ -14,9 +14,13 @@ export type StringSettingKey =
   | SettingKey.OWN_COMPANY_DISPLAY_NAME;
 
 export interface Setting {
+  id: string;
   key: SettingKey;
-  value: number | string;
+  numericValue: string | null;
+  textValue: string | null;
   description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const isNumericSetting = (key: SettingKey): key is NumericSettingKey => {

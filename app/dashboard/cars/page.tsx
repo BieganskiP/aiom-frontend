@@ -3,16 +3,27 @@
 import { useEffect, useState } from "react";
 import { Car } from "@/types";
 import { getCars } from "@/services/cars";
+import { getSettings } from "@/services/settings";
 import { Button } from "@/components/atoms/Button";
 import { CarsList } from "@/components/molecules/CarsList";
 import { CarModal } from "@/components/molecules/CarModal";
 import { Plus } from "lucide-react";
+import { SettingKey } from "@/types/settings";
+
+interface CompanyNames {
+  parent: string;
+  own: string;
+}
 
 export default function CarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [companyNames, setCompanyNames] = useState<CompanyNames>({
+    parent: "Firma matka",
+    own: "Firma własna",
+  });
 
   const fetchCars = async () => {
     try {
@@ -29,7 +40,26 @@ export default function CarsPage() {
   };
 
   useEffect(() => {
-    fetchCars();
+    const fetchSettings = async () => {
+      try {
+        const settings = await getSettings();
+        const parentCompanyName = settings.find(
+          (s) => s.key === SettingKey.PARENT_COMPANY_DISPLAY_NAME
+        )?.textValue;
+        const ownCompanyName = settings.find(
+          (s) => s.key === SettingKey.OWN_COMPANY_DISPLAY_NAME
+        )?.textValue;
+
+        setCompanyNames({
+          parent: parentCompanyName || "Firma matka",
+          own: ownCompanyName || "Firma własna",
+        });
+      } catch (error) {
+        console.error("Failed to fetch company names:", error);
+      }
+    };
+
+    Promise.all([fetchCars(), fetchSettings()]);
   }, []);
 
   return (
@@ -54,12 +84,18 @@ export default function CarsPage() {
           </div>
         )}
 
-        <CarsList cars={cars} onUpdate={fetchCars} loading={loading} />
+        <CarsList
+          cars={cars}
+          onUpdate={fetchCars}
+          loading={loading}
+          companyNames={companyNames}
+        />
 
         <CarModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSuccess={fetchCars}
+          companyNames={companyNames}
         />
       </div>
     </main>

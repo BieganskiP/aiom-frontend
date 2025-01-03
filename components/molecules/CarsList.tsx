@@ -10,13 +10,24 @@ import { AssignCarModal } from "./AssignCarModal";
 import { DropdownMenu } from "@/components/atoms/DropdownMenu";
 import { CarModal } from "./CarModal";
 
+interface CompanyNames {
+  parent: string;
+  own: string;
+}
+
 interface CarsListProps {
   cars: Car[];
   onUpdate: () => void;
   loading?: boolean;
+  companyNames: CompanyNames;
 }
 
-export function CarsList({ cars, onUpdate, loading }: CarsListProps) {
+export function CarsList({
+  cars,
+  onUpdate,
+  loading = false,
+  companyNames,
+}: CarsListProps) {
   const { user } = useAuth();
   const [error, setError] = useState<string>("");
   const [editingCar, setEditingCar] = useState<Car | null>(null);
@@ -106,6 +117,12 @@ export function CarsList({ cars, onUpdate, loading }: CarsListProps) {
     }
   };
 
+  const getOwnerDisplayName = (owner: CarOwner) => {
+    return owner === CarOwner.PARENT_COMPANY
+      ? companyNames.parent
+      : companyNames.own;
+  };
+
   return (
     <div className="space-y-4">
       {error && (
@@ -173,9 +190,7 @@ export function CarsList({ cars, onUpdate, loading }: CarsListProps) {
                       </span>
                     </td>
                     <td className="p-4 text-foreground truncate">
-                      {car.owner === CarOwner.OWN_COMPANY
-                        ? "Firma"
-                        : "Firma matka"}
+                      {getOwnerDisplayName(car.owner)}
                     </td>
                     <td className="p-4 text-foreground truncate">
                       {car.assignedUser
@@ -261,6 +276,7 @@ export function CarsList({ cars, onUpdate, loading }: CarsListProps) {
           onClose={() => setEditingCar(null)}
           onSuccess={onUpdate}
           car={editingCar}
+          companyNames={companyNames}
         />
       )}
 

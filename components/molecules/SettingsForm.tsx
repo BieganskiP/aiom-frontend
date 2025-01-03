@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
-import { getSettings, updateSetting } from "@/services/settings";
-import { SettingKey, isNumericSetting } from "@/types/settings";
+import { updateSetting } from "@/services/settings";
+import { SettingKey, isNumericSetting, Setting } from "@/types/settings";
 
 interface FormData {
   [SettingKey.COMPANY_RATE_PER_STOP]: number;
@@ -13,16 +13,49 @@ interface FormData {
   [SettingKey.OWN_COMPANY_DISPLAY_NAME]: string;
 }
 
-export function SettingsForm() {
+interface Props {
+  initialSettings: Setting[];
+}
+
+export function SettingsForm({ initialSettings }: Props) {
   const [formData, setFormData] = useState<FormData>({
     [SettingKey.COMPANY_RATE_PER_STOP]: 0,
     [SettingKey.COMPANY_CAR_RATE]: 0,
     [SettingKey.PARENT_COMPANY_DISPLAY_NAME]: "",
     [SettingKey.OWN_COMPANY_DISPLAY_NAME]: "",
   });
+  const [initialFormData, setInitialFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (initialSettings.length > 0) {
+      const initialData: FormData = {
+        [SettingKey.COMPANY_RATE_PER_STOP]:
+          Number(
+            initialSettings.find(
+              (s) => s.key === SettingKey.COMPANY_RATE_PER_STOP
+            )?.numericValue
+          ) || 0,
+        [SettingKey.COMPANY_CAR_RATE]:
+          Number(
+            initialSettings.find((s) => s.key === SettingKey.COMPANY_CAR_RATE)
+              ?.numericValue
+          ) || 0,
+        [SettingKey.PARENT_COMPANY_DISPLAY_NAME]:
+          initialSettings.find(
+            (s) => s.key === SettingKey.PARENT_COMPANY_DISPLAY_NAME
+          )?.textValue || "",
+        [SettingKey.OWN_COMPANY_DISPLAY_NAME]:
+          initialSettings.find(
+            (s) => s.key === SettingKey.OWN_COMPANY_DISPLAY_NAME
+          )?.textValue || "",
+      };
+      setFormData(initialData);
+      setInitialFormData(initialData);
+    }
+  }, [initialSettings]);
 
   const handleChange = (key: SettingKey, value: string) => {
     setFormData((prev) => ({
@@ -32,6 +65,17 @@ export function SettingsForm() {
     setSuccess(false);
   };
 
+  const getChangedSettings = () => {
+    if (!initialFormData) return [];
+
+    return Object.entries(formData)
+      .filter(([key, value]) => {
+        const initialValue = initialFormData[key as keyof FormData];
+        return value !== initialValue;
+      })
+      .map(([key]) => key as SettingKey);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -39,13 +83,18 @@ export function SettingsForm() {
     setSuccess(false);
 
     try {
-      // Update all settings in parallel
+      const changedSettings = getChangedSettings();
+      if (changedSettings.length === 0) {
+        setSuccess(true);
+        return;
+      }
+
+      // Update only changed settings in parallel
       await Promise.all(
-        Object.entries(formData).map(([key, value]) =>
-          updateSetting(key as SettingKey, value)
-        )
+        changedSettings.map((key) => updateSetting(key, formData[key]))
       );
       setSuccess(true);
+      setInitialFormData(formData);
     } catch (error) {
       console.error("Failed to update settings:", error);
       setError("Nie udało się zaktualizować ustawień");
@@ -53,39 +102,6 @@ export function SettingsForm() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const settings = await getSettings();
-        const initialData: FormData = {
-          [SettingKey.COMPANY_RATE_PER_STOP]:
-            Number(
-              settings.find((s) => s.key === SettingKey.COMPANY_RATE_PER_STOP)
-                ?.value
-            ) || 0,
-          [SettingKey.COMPANY_CAR_RATE]:
-            Number(
-              settings.find((s) => s.key === SettingKey.COMPANY_CAR_RATE)?.value
-            ) || 0,
-          [SettingKey.PARENT_COMPANY_DISPLAY_NAME]:
-            settings
-              .find((s) => s.key === SettingKey.PARENT_COMPANY_DISPLAY_NAME)
-              ?.value?.toString() || "",
-          [SettingKey.OWN_COMPANY_DISPLAY_NAME]:
-            settings
-              .find((s) => s.key === SettingKey.OWN_COMPANY_DISPLAY_NAME)
-              ?.value?.toString() || "",
-        };
-        setFormData(initialData);
-      } catch (error) {
-        console.error("Failed to fetch settings:", error);
-        setError("Nie udało się pobrać ustawień");
-      }
-    };
-
-    fetchSettings();
-  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
