@@ -5,6 +5,7 @@ import { fetchUserProfile } from "@/services/auth";
 import { usePathname } from "next/navigation";
 import { User } from "@/types";
 import { LoadingScreen } from "@/components/atoms/LoadingScreen";
+import Cookies from "js-cookie";
 
 interface AuthContextType {
   user: User | null;
@@ -23,8 +24,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await fetchUserProfile();
       setUser(data);
-    } catch {
-      setUser(null);
+    } catch (error) {
+      // Only clear user on auth errors (401 Unauthorized)
+      if (
+        error instanceof Error &&
+        error.message.toLowerCase().includes("unauthorized")
+      ) {
+        setUser(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        Cookies.remove("token", { path: "/" });
+      }
+      // For other errors, keep the current user state and log the error
+      console.error("Failed to refresh user profile:", error);
     }
   };
 

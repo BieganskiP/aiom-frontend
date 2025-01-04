@@ -30,8 +30,9 @@ export const LoginForm = () => {
 
       // Store token in both cookie and localStorage
       Cookies.set("token", response.access_token, {
-        expires: 1, // 1 day
+        expires: 365 * 100, // 100 years to match backend
         path: "/",
+        sameSite: "strict",
       });
       localStorage.setItem("token", response.access_token);
       localStorage.setItem("user", JSON.stringify(response.user));
