@@ -10,6 +10,7 @@ import { WorkEntriesList } from "@/components/molecules/WorkEntriesList";
 import { Button } from "@/components/atoms/Button";
 import { Plus } from "lucide-react";
 import { WorkEntryModal } from "@/components/molecules/WorkEntryModal";
+import PageHeader from "@/components/atoms/PageHeader";
 
 export default function AllWorkEntriesPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
@@ -58,9 +59,7 @@ export default function AllWorkEntriesPage() {
     <main className="min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-foreground">
-            Wszystkie wpisy pracy
-          </h1>
+          <PageHeader title="Wszystkie wpisy pracy" />
           <Button
             onClick={() => setIsModalOpen(true)}
             size="sm"

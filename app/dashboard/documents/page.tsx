@@ -12,6 +12,7 @@ import {
   uploadPdf,
 } from "@/services/files";
 import { TableWrapper } from "@/components/atoms/TableWrapper";
+import PageHeader from "@/components/atoms/PageHeader";
 
 export default function DocumentsPage() {
   const [files, setFiles] = useState<CustomFile[]>([]);
@@ -127,126 +128,121 @@ export default function DocumentsPage() {
   }
 
   return (
-    <main className="min-h-screen p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Dokumenty</h1>
-          <div className="flex gap-2">
-            <div>
-              <input
-                type="file"
-                id="image-upload"
-                className="hidden"
-                accept="image/jpeg,image/png"
-                onChange={(e) => handleFileUpload(e, "image")}
-                disabled={uploading}
-              />
-              <Button
-                onClick={() => document.getElementById("image-upload")?.click()}
-                disabled={uploading}
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Image className="w-4 h-4" aria-label="Ikona obrazu" />
-                <span className="hidden sm:inline">Dodaj obraz</span>
-                <span className="sm:hidden">Obraz</span>
-              </Button>
-            </div>
-            <div>
-              <input
-                type="file"
-                id="pdf-upload"
-                className="hidden"
-                accept="application/pdf"
-                onChange={(e) => handleFileUpload(e, "pdf")}
-                disabled={uploading}
-              />
-              <Button
-                onClick={() => document.getElementById("pdf-upload")?.click()}
-                disabled={uploading}
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <FileText className="w-4 h-4" aria-label="Ikona PDF" />
-                <span className="hidden sm:inline">Dodaj PDF</span>
-                <span className="sm:hidden">PDF</span>
-              </Button>
-            </div>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="flex justify-between items-center mb-8">
+        <PageHeader title="Dokumenty" />
+        <div className="flex gap-2">
+          <div>
+            <input
+              type="file"
+              id="image-upload"
+              className="hidden"
+              accept="image/jpeg,image/png"
+              onChange={(e) => handleFileUpload(e, "image")}
+              disabled={uploading}
+            />
+            <Button
+              onClick={() => document.getElementById("image-upload")?.click()}
+              disabled={uploading}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Image className="w-4 h-4" aria-label="Ikona obrazu" />
+              <span className="hidden sm:inline">Dodaj obraz</span>
+              <span className="sm:hidden">Obraz</span>
+            </Button>
           </div>
-        </div>
-
-        {error && (
-          <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
-            {error}
+          <div>
+            <input
+              type="file"
+              id="pdf-upload"
+              className="hidden"
+              accept="application/pdf"
+              onChange={(e) => handleFileUpload(e, "pdf")}
+              disabled={uploading}
+            />
+            <Button
+              onClick={() => document.getElementById("pdf-upload")?.click()}
+              disabled={uploading}
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" aria-label="Ikona PDF" />
+              <span className="hidden sm:inline">Dodaj PDF</span>
+              <span className="sm:hidden">PDF</span>
+            </Button>
           </div>
-        )}
-
-        <div className="bg-bg-800 rounded-lg">
-          <TableWrapper>
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-bg-700">
-                  <th className="text-left p-4 text-neutral-400 font-medium">
-                    Nazwa
-                  </th>
-                  <th className="text-left p-4 text-neutral-400 font-medium">
-                    Typ
-                  </th>
-                  <th className="text-left p-4 text-neutral-400 font-medium">
-                    Rozmiar
-                  </th>
-                  <th className="text-left p-4 text-neutral-400 font-medium">
-                    Data dodania
-                  </th>
-                  <th className="w-20 p-4"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-bg-700">
-                {files.map((file) => (
-                  <tr key={file.id} className="group">
-                    <td className="p-4 text-foreground">{file.originalName}</td>
-                    <td className="p-4 text-foreground">
-                      {file.type === "image" ? "Obraz" : "PDF"}
-                    </td>
-                    <td className="p-4 text-foreground">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </td>
-                    <td className="p-4 text-foreground">
-                      {new Date(file.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleDownload(file)}
-                          className="p-2 hover:bg-bg-700 rounded-lg text-neutral-400 hover:text-neutral-200"
-                        >
-                          <Download size={20} aria-label="Pobierz plik" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(file.id)}
-                          className="p-2 hover:bg-error-500/10 rounded-lg text-error-500"
-                        >
-                          <Trash2 size={20} aria-label="Usuń plik" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {files.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="p-4 text-center text-neutral-400"
-                    >
-                      Brak plików
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </TableWrapper>
         </div>
       </div>
-    </main>
+
+      {error && (
+        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-6">
+          {error}
+        </div>
+      )}
+
+      <div className="bg-bg-800 rounded-lg">
+        <TableWrapper>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-bg-700">
+                <th className="text-left p-4 text-neutral-400 font-medium">
+                  Nazwa
+                </th>
+                <th className="text-left p-4 text-neutral-400 font-medium">
+                  Typ
+                </th>
+                <th className="text-left p-4 text-neutral-400 font-medium">
+                  Rozmiar
+                </th>
+                <th className="text-left p-4 text-neutral-400 font-medium">
+                  Data dodania
+                </th>
+                <th className="w-20 p-4"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-bg-700">
+              {files.map((file) => (
+                <tr key={file.id} className="group">
+                  <td className="p-4 text-foreground">{file.originalName}</td>
+                  <td className="p-4 text-foreground">
+                    {file.type === "image" ? "Obraz" : "PDF"}
+                  </td>
+                  <td className="p-4 text-foreground">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </td>
+                  <td className="p-4 text-foreground">
+                    {new Date(file.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleDownload(file)}
+                        className="p-2 hover:bg-bg-700 rounded-lg text-neutral-400 hover:text-neutral-200"
+                      >
+                        <Download size={20} aria-label="Pobierz plik" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(file.id)}
+                        className="p-2 hover:bg-error-500/10 rounded-lg text-error-500"
+                      >
+                        <Trash2 size={20} aria-label="Usuń plik" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {files.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-4 text-center text-neutral-400">
+                    Brak plików
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </TableWrapper>
+      </div>
+    </div>
   );
 }

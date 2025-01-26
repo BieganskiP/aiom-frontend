@@ -9,6 +9,7 @@ import { RoutesList } from "@/components/molecules/RoutesList";
 import { RouteModal } from "@/components/molecules/RouteModal";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import PageHeader from "@/components/atoms/PageHeader";
 
 export default function RoutesPage() {
   const { user } = useAuth();
@@ -53,8 +54,8 @@ export default function RoutesPage() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <div className="h-8 w-48 bg-bg-700 rounded animate-pulse mb-6" />
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="h-8 w-48 bg-bg-700 rounded animate-pulse mb-8" />
         <div className="space-y-4">
           <div className="h-12 bg-bg-700 rounded animate-pulse" />
           <div className="h-12 bg-bg-700 rounded animate-pulse" />
@@ -65,19 +66,24 @@ export default function RoutesPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Trasy</h1>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="flex justify-between items-center mb-8">
+        <PageHeader title="Trasy" />
         {canManageRoutes && (
-          <Button onClick={() => setIsAddModalOpen(true)}>
-            <Plus size={20} />
-            Dodaj trasę
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Dodaj trasę</span>
+            <span className="sm:hidden">Dodaj</span>
           </Button>
         )}
       </div>
 
       {error && (
-        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
+        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-6">
           {error}
         </div>
       )}

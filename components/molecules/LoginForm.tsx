@@ -59,33 +59,35 @@ export const LoginForm = () => {
         </div>
       )}
 
-      <TextInput
-        label="Email"
-        type="email"
-        placeholder="Wprowadź adres email"
-        {...register("email", {
-          required: "Email jest wymagany",
-          pattern: {
-            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-            message: "Nieprawidłowy adres email",
-          },
-        })}
-        error={errors.email}
-      />
+      <div className="flex flex-col gap-4 w-full">
+        <TextInput
+          label="Email"
+          type="email"
+          placeholder="Wprowadź adres email"
+          {...register("email", {
+            required: "Email jest wymagany",
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "Nieprawidłowy adres email",
+            },
+          })}
+          error={errors.email}
+        />
 
-      <TextInput
-        label="Hasło"
-        type="password"
-        placeholder="Wprowadź hasło"
-        {...register("password", {
-          required: "Hasło jest wymagane",
-          minLength: {
-            value: 6,
-            message: "Hasło musi mieć co najmniej 6 znaków",
-          },
-        })}
-        error={errors.password}
-      />
+        <TextInput
+          label="Hasło"
+          type="password"
+          placeholder="Wprowadź hasło"
+          {...register("password", {
+            required: "Hasło jest wymagane",
+            minLength: {
+              value: 6,
+              message: "Hasło musi mieć co najmniej 6 znaków",
+            },
+          })}
+          error={errors.password}
+        />
+      </div>
 
       <Button
         type="submit"

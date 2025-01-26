@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types";
 import { getSettings } from "@/services/settings";
 import type { Setting } from "@/types/settings";
+import PageHeader from "@/components/atoms/PageHeader";
 
 type Tab = "profile" | "password" | "company";
 
@@ -42,10 +43,10 @@ export default function Settings() {
   }, [isAdmin]);
 
   return (
-    <main className="min-h-screen p-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-foreground mb-6">Ustawienia</h1>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <PageHeader title="Ustawienia" />
 
+      <div className="mx-auto mt-8">
         <div className="mb-6 border-b border-bg-700">
           <div className="flex gap-4">
             <button
@@ -91,7 +92,7 @@ export default function Settings() {
           isAdmin && (
             <>
               {error && (
-                <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-4">
+                <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20 mb-6">
                   {error}
                 </div>
               )}
@@ -104,6 +105,6 @@ export default function Settings() {
           )
         )}
       </div>
-    </main>
+    </div>
   );
 }

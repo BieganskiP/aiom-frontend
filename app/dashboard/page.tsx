@@ -22,6 +22,7 @@ import { format, eachDayOfInterval, startOfMonth, endOfMonth } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
+import PageHeader from "@/components/atoms/PageHeader";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
@@ -198,6 +199,8 @@ export default function DashboardPage() {
           {error}
         </div>
       )}
+
+      <PageHeader title="Panel główny" />
 
       {/* Personal Statistics Section */}
       <div>

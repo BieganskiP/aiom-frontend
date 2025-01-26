@@ -6,6 +6,7 @@ import { getMyWorkEntries } from "@/services/workEntries";
 import { WorkEntriesList } from "@/components/molecules/WorkEntriesList";
 import { Button } from "@/components/atoms/Button";
 import { WorkEntryModal } from "@/components/molecules/WorkEntryModal";
+import PageHeader from "@/components/atoms/PageHeader";
 
 export default function WorkEntriesPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);
@@ -42,10 +43,10 @@ export default function WorkEntriesPage() {
   }, [fetchEntries]);
 
   return (
-    <main className="min-h-screen p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="container mx-auto px-4 py-6 max-w-7xl flex flex-col gap-14">
+      <PageHeader title="Wpisy pracy" />
+      <div className="mx-auto flex flex-col gap-4 w-full">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h1 className="text-2xl font-bold text-foreground">Wpisy pracy</h1>
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <input
               type="month"
@@ -81,6 +82,6 @@ export default function WorkEntriesPage() {
           onSuccess={fetchEntries}
         />
       </div>
-    </main>
+    </div>
   );
 }
