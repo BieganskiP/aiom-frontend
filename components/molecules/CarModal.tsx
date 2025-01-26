@@ -122,7 +122,7 @@ export const CarModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div
         ref={modalRef}
-        className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto"
+        className="bg-bg-800 rounded-lg p-4 md:p-6 w-full max-w-xl relative max-h-[90vh] overflow-y-auto"
       >
         <button
           onClick={onClose}
@@ -196,6 +196,7 @@ export const CarModal = ({
                 <option value={CarStatus.OUT_OF_SERVICE}>
                   Wyłączony z użytku
                 </option>
+                <option value={CarStatus.RENTED}>Wypożyczony</option>
               </select>
             </div>
           </div>

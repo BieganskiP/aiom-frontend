@@ -57,6 +57,7 @@ export enum CarStatus {
   IN_USE = "in_use",
   IN_REPAIR = "in_repair",
   OUT_OF_SERVICE = "out_of_service",
+  RENTED = "rented",
 }
 
 export interface Car {
