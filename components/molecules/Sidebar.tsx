@@ -12,6 +12,8 @@ import {
   Menu,
   X,
   Map,
+  List,
+  Calendar,
 } from "lucide-react";
 import { Nav, NavItem } from "./Nav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -123,6 +125,10 @@ export const Sidebar = () => {
                   <Route size={20} />
                   Trasy
                 </NavItem>
+                <NavItem href="/dashboard/events" onClick={closeSidebar}>
+                  <Calendar size={20} />
+                  Wydarzenia
+                </NavItem>
               </>
             )}
 
@@ -143,6 +149,10 @@ export const Sidebar = () => {
                 >
                   <ClipboardList size={20} />
                   Wszystkie wpisy
+                </NavItem>
+                <NavItem href="/dashboard/lists" onClick={closeSidebar}>
+                  <List size={20} />
+                  Listy
                 </NavItem>
               </>
             )}

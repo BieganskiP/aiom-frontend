@@ -157,3 +157,22 @@ export interface Region {
   updatedBy: string;
   updatedByUser?: User;
 }
+
+export interface RoutesList {
+  id: number;
+  route: string;
+  number_of_stops: number;
+  number_of_packages: number;
+  date: Date;
+}
+
+export interface Event {
+  id: string;
+  description: string;
+  date: Date;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+  userId: string;
+  user?: User;
+}
