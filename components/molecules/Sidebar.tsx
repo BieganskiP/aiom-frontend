@@ -89,7 +89,7 @@ export const Sidebar = () => {
         <div className="h-16 md:hidden"></div>
 
         {/* Main navigation - grows to fill available space */}
-        <div className="flex-grow overflow-y-auto p-4">
+        <div className="flex-grow overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-bg-700 scrollbar-track-bg-800 hover:scrollbar-thumb-bg-600">
           <Nav>
             {/* Regular links */}
             <NavItem href="/dashboard" onClick={closeSidebar}>
@@ -105,6 +105,11 @@ export const Sidebar = () => {
             <NavItem href="/dashboard/documents" onClick={closeSidebar}>
               <FileText size={20} />
               Dokumenty
+            </NavItem>
+
+            <NavItem href="/dashboard/complaints" onClick={closeSidebar}>
+              <ClipboardList size={20} />
+              Reklamacje
             </NavItem>
 
             <NavItem href="/dashboard/settings" onClick={closeSidebar}>
@@ -135,6 +140,7 @@ export const Sidebar = () => {
             {/* Full Admin Only section */}
             {hasFullAdminAccess && (
               <>
+                <div className="my-2 border-t border-bg-700" />
                 <NavItem href="/dashboard/cars" onClick={closeSidebar}>
                   <Car size={20} />
                   Samochody
@@ -153,6 +159,13 @@ export const Sidebar = () => {
                 <NavItem href="/dashboard/lists" onClick={closeSidebar}>
                   <List size={20} />
                   Listy
+                </NavItem>
+                <NavItem
+                  href="/dashboard/complaints-admin"
+                  onClick={closeSidebar}
+                >
+                  <ClipboardList size={20} />
+                  Zarządzanie reklamacjami
                 </NavItem>
               </>
             )}

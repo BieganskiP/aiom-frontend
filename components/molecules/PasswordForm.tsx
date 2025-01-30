@@ -35,7 +35,7 @@ export const PasswordForm = () => {
         newPassword: data.newPassword,
       });
       setSuccess("Hasło zostało zmienione");
-      reset(); // Clear form after successful password change
+      reset();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -46,59 +46,64 @@ export const PasswordForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && (
-        <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
-          {error}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="p-6 rounded-lg">
+        <h2 className="text-lg font-semibold mb-4">Zmiana hasła</h2>
+        <div className="space-y-6">
+          {error && (
+            <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-success-50/10 text-success-500 p-3 rounded-lg text-sm border border-success-500/20">
+              {success}
+            </div>
+          )}
+
+          <TextInput
+            label="Obecne hasło"
+            type="password"
+            placeholder="Wprowadź obecne hasło"
+            {...register("currentPassword", {
+              required: "Obecne hasło jest wymagane",
+            })}
+            error={errors.currentPassword}
+          />
+
+          <TextInput
+            label="Nowe hasło"
+            type="password"
+            placeholder="Wprowadź nowe hasło"
+            {...register("newPassword", {
+              required: "Nowe hasło jest wymagane",
+              minLength: {
+                value: 6,
+                message: "Hasło musi mieć co najmniej 6 znaków",
+              },
+            })}
+            error={errors.newPassword}
+          />
+
+          <TextInput
+            label="Potwierdź nowe hasło"
+            type="password"
+            placeholder="Wprowadź nowe hasło ponownie"
+            {...register("confirmPassword", {
+              required: "Potwierdzenie hasła jest wymagane",
+              validate: (value) =>
+                value === newPassword || "Hasła muszą być identyczne",
+            })}
+            error={errors.confirmPassword}
+          />
+
+          <div className="pt-4">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Zmienianie hasła..." : "Zmień hasło"}
+            </Button>
+          </div>
         </div>
-      )}
-
-      {success && (
-        <div className="bg-green-500/10 text-green-500 p-3 rounded-lg text-sm border border-green-500/20">
-          {success}
-        </div>
-      )}
-
-      <TextInput
-        label="Obecne hasło"
-        type="password"
-        placeholder="Wprowadź obecne hasło"
-        {...register("currentPassword", {
-          required: "Obecne hasło jest wymagane",
-        })}
-        error={errors.currentPassword}
-      />
-
-      <TextInput
-        label="Nowe hasło"
-        type="password"
-        placeholder="Wprowadź nowe hasło"
-        {...register("newPassword", {
-          required: "Nowe hasło jest wymagane",
-          minLength: {
-            value: 6,
-            message: "Hasło musi mieć co najmniej 6 znaków",
-          },
-        })}
-        error={errors.newPassword}
-      />
-
-      <TextInput
-        label="Potwierdź nowe hasło"
-        type="password"
-        placeholder="Wprowadź nowe hasło ponownie"
-        {...register("confirmPassword", {
-          required: "Potwierdzenie hasła jest wymagane",
-          validate: (value) =>
-            value === newPassword || "Hasła muszą być identyczne",
-        })}
-        error={errors.confirmPassword}
-      />
-
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Zmienianie hasła..." : "Zmień hasło"}
-        </Button>
       </div>
     </form>
   );

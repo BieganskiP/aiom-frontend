@@ -89,7 +89,6 @@ export function SettingsForm({ initialSettings }: Props) {
         return;
       }
 
-      // Update only changed settings in parallel
       await Promise.all(
         changedSettings.map((key) => updateSetting(key, formData[key]))
       );
@@ -105,8 +104,8 @@ export function SettingsForm({ initialSettings }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-bg-800 p-6 rounded-lg">
-        <h2 className="text-lg font-semibold mb-4">Stawki za przystanki</h2>
+      <div className="p-6 rounded-lg">
+        <h2 className="text-lg font-semibold mb-4">Ustawienia</h2>
         <div className="space-y-6">
           {error && (
             <div className="bg-error-50/10 text-error-500 p-3 rounded-lg text-sm border border-error-500/20">
@@ -120,87 +119,88 @@ export function SettingsForm({ initialSettings }: Props) {
             </div>
           )}
 
-          {/* Company Rate Per Stop */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-400 mb-2">
-              Stawka za stopa (samochód od CL)
-            </label>
-            <div className="flex gap-4">
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-neutral-400 mb-2">
+                Stawka za stopa (samochód od CL)
+              </label>
+              <div className="flex gap-4">
+                <TextInput
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData[SettingKey.COMPANY_RATE_PER_STOP]}
+                  onChange={(e) =>
+                    handleChange(
+                      SettingKey.COMPANY_RATE_PER_STOP,
+                      e.target.value
+                    )
+                  }
+                  className="max-w-[200px]"
+                  disabled={loading}
+                />
+                <span className="text-neutral-400 self-center">zł</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-400 mb-2">
+                Stawka za stopa (Samochód własny)
+              </label>
+              <div className="flex gap-4">
+                <TextInput
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData[SettingKey.COMPANY_CAR_RATE]}
+                  onChange={(e) =>
+                    handleChange(SettingKey.COMPANY_CAR_RATE, e.target.value)
+                  }
+                  className="max-w-[200px]"
+                  disabled={loading}
+                />
+                <span className="text-neutral-400 self-center">zł</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-400 mb-2">
+                Nazwa firmy (rodzic)
+              </label>
               <TextInput
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData[SettingKey.COMPANY_RATE_PER_STOP]}
+                value={formData[SettingKey.PARENT_COMPANY_DISPLAY_NAME]}
                 onChange={(e) =>
-                  handleChange(SettingKey.COMPANY_RATE_PER_STOP, e.target.value)
+                  handleChange(
+                    SettingKey.PARENT_COMPANY_DISPLAY_NAME,
+                    e.target.value
+                  )
                 }
                 className="max-w-[200px]"
                 disabled={loading}
               />
-              <span className="text-neutral-400 self-center">zł</span>
             </div>
-          </div>
 
-          {/* Company Car Rate */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-400 mb-2">
-              Stawka za stopa (Samochód własny)
-            </label>
-            <div className="flex gap-4">
+            <div>
+              <label className="block text-sm font-medium text-neutral-400 mb-2">
+                Nazwa firmy (własna)
+              </label>
               <TextInput
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData[SettingKey.COMPANY_CAR_RATE]}
+                value={formData[SettingKey.OWN_COMPANY_DISPLAY_NAME]}
                 onChange={(e) =>
-                  handleChange(SettingKey.COMPANY_CAR_RATE, e.target.value)
+                  handleChange(
+                    SettingKey.OWN_COMPANY_DISPLAY_NAME,
+                    e.target.value
+                  )
                 }
                 className="max-w-[200px]"
                 disabled={loading}
               />
-              <span className="text-neutral-400 self-center">zł</span>
             </div>
-          </div>
-
-          {/* Parent Company Display Name */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-400 mb-2">
-              Nazwa firmy (rodzic)
-            </label>
-            <TextInput
-              value={formData[SettingKey.PARENT_COMPANY_DISPLAY_NAME]}
-              onChange={(e) =>
-                handleChange(
-                  SettingKey.PARENT_COMPANY_DISPLAY_NAME,
-                  e.target.value
-                )
-              }
-              className="max-w-[200px]"
-              disabled={loading}
-            />
-          </div>
-
-          {/* Own Company Display Name */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-400 mb-2">
-              Nazwa firmy (własna)
-            </label>
-            <TextInput
-              value={formData[SettingKey.OWN_COMPANY_DISPLAY_NAME]}
-              onChange={(e) =>
-                handleChange(
-                  SettingKey.OWN_COMPANY_DISPLAY_NAME,
-                  e.target.value
-                )
-              }
-              className="max-w-[200px]"
-              disabled={loading}
-            />
           </div>
 
           <div className="pt-4">
             <Button type="submit" disabled={loading}>
-              Zapisz zmiany
+              {loading ? "Zapisywanie..." : "Zapisz zmiany"}
             </Button>
           </div>
         </div>

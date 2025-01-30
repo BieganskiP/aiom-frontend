@@ -176,3 +176,37 @@ export interface Event {
   userId: string;
   user?: User;
 }
+
+export interface Complaint {
+  id: string;
+  description: string;
+  date: Date;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+  userId: string;
+  user?: User;
+}
+
+export enum ComplaintStatus {
+  EMPTY = "",
+  APPROVED = "approved",
+  REJECTED = "rejected",
+  IN_PROGRESS = "inProgress",
+}
+
+export interface Complaint {
+  id: string;
+  complaint_number: number;
+  client: string;
+  description: string;
+  problem_type: string;
+  compensation_value: number | null;
+  courier: string;
+  address: string;
+  delivery_date: string; // ISO date string
+  comments: string | null;
+  userId: string;
+  status: ComplaintStatus;
+  user?: User; // Optional because it's a relation that might not always be loaded
+}
