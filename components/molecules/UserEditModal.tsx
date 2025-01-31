@@ -73,7 +73,7 @@ export const UserEditModal = ({
     }
   }, [isOpen, user, reset]);
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   const onSubmit = async (data: UserEditFormData) => {
     try {

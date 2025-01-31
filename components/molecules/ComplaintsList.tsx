@@ -15,9 +15,11 @@ import { Select } from "../atoms/Select";
 import { Search, ArrowUpDown, Users } from "lucide-react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
+import { ComplaintDetailsModal } from "./ComplaintDetailsModal";
 
 interface ComplaintsListProps {
   userId?: string;
+  selectedMonth?: string;
 }
 
 interface Filters {
@@ -41,14 +43,19 @@ type QueryParams = Omit<ComplaintsQueryParams, "status"> & {
   status?: ComplaintStatus | "";
 };
 
-export default function ComplaintsList({ userId }: ComplaintsListProps) {
+export default function ComplaintsList({
+  userId,
+  selectedMonth,
+}: ComplaintsListProps) {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [selectedComplaints, setSelectedComplaints] = useState<string[]>([]);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
-
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(
+    null
+  );
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit] = useState(50);
@@ -63,7 +70,7 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
     courier: "",
     startDate: "",
     endDate: "",
-    month: "",
+    month: selectedMonth || "",
     problem_type: "",
     status: "",
   });
@@ -129,6 +136,12 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
     fetchUsers();
   }, [fetchComplaints, fetchUsers]);
 
+  useEffect(() => {
+    if (selectedMonth) {
+      handleFilterChange("month", selectedMonth);
+    }
+  }, [selectedMonth]);
+
   const handleFilterChange = (key: keyof Filters, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setPage(1); // Reset page when filters change
@@ -157,7 +170,7 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
       courier: "",
       startDate: "",
       endDate: "",
-      month: "",
+      month: selectedMonth || "",
       problem_type: "",
       status: "",
     });
@@ -360,7 +373,7 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
       </div>
 
       {/* Bulk Actions */}
-      {selectedComplaints.length > 0 && (
+      {!userId && selectedComplaints.length > 0 && (
         <div className="bg-bg-800 p-4 rounded-lg space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium">
@@ -417,17 +430,21 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-bg-700">
-                <th className="px-4 py-3 text-left">
-                  <div className="flex items-center space-x-2">
+                {!userId && (
+                  <th className="px-4 py-3 text-left">
                     <input
                       type="checkbox"
                       checked={
-                        selectedComplaints.length === complaints.length &&
-                        complaints.length > 0
+                        complaints.length > 0 &&
+                        selectedComplaints.length === complaints.length
                       }
                       onChange={handleSelectAll}
-                      className="rounded border-bg-700 bg-bg-900"
+                      className="rounded border-bg-600"
                     />
+                  </th>
+                )}
+                <th className="px-4 py-3 text-left">
+                  <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleSort("complaint_number")}
                       className="flex items-center space-x-1 text-sm font-medium text-neutral-400 hover:text-neutral-200"
@@ -485,7 +502,7 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
               {loading ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={userId ? 9 : 10}
                     className="px-4 py-8 text-center text-neutral-400"
                   >
                     Ładowanie...
@@ -494,7 +511,7 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
               ) : complaints.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={userId ? 9 : 10}
                     className="px-4 py-8 text-center text-neutral-400"
                   >
                     Brak reklamacji spełniających kryteria
@@ -506,17 +523,17 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
                     key={complaint.id}
                     className="border-b border-bg-700 last:border-b-0"
                   >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center space-x-2">
+                    {!userId && (
+                      <td className="px-4 py-3">
                         <input
                           type="checkbox"
                           checked={selectedComplaints.includes(complaint.id)}
                           onChange={() => handleSelectComplaint(complaint.id)}
-                          className="rounded border-bg-700 bg-bg-900"
+                          className="rounded border-bg-600"
                         />
-                        <span>#{complaint.complaint_number}</span>
-                      </div>
-                    </td>
+                      </td>
+                    )}
+                    <td className="px-4 py-3">{complaint.complaint_number}</td>
                     <td className="px-4 py-3">{complaint.client}</td>
                     <td className="px-4 py-3">
                       <div className="max-w-md">
@@ -553,7 +570,11 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedComplaint(complaint)}
+                      >
                         Szczegóły
                       </Button>
                     </td>
@@ -591,6 +612,15 @@ export default function ComplaintsList({ userId }: ComplaintsListProps) {
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Details Modal */}
+      {selectedComplaint && (
+        <ComplaintDetailsModal
+          complaint={selectedComplaint}
+          isOpen={!!selectedComplaint}
+          onClose={() => setSelectedComplaint(null)}
+        />
       )}
     </div>
   );

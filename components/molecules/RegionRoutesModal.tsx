@@ -40,7 +40,7 @@ export const RegionRoutesModal = ({
   const [selectedRoutes, setSelectedRoutes] = useState<string[]>([]);
   const canManageRoutes = user?.role === "admin" || user?.role === "owner";
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   const fetchRoutes = async () => {
     try {

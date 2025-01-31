@@ -10,7 +10,7 @@ interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   ({ label, error, className = "", labelClassName = "", ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         {label && (
           <label
             htmlFor={props.id}

@@ -39,7 +39,7 @@ export const WorkEntryModal = ({
   const [cars, setCars] = useState<Car[]>([]);
   const [routes, setRoutes] = useState<Route[]>([]);
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   const {
     register,

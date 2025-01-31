@@ -36,7 +36,7 @@ export const RouteModal = ({
     formState: { errors, isSubmitting },
   } = useForm<RouteFormData>();
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   useEffect(() => {
     if (route) {

@@ -56,6 +56,28 @@ interface PaginatedResponse<T> {
   };
 }
 
+interface ComplaintStats {
+  total: number;
+  byStatus: {
+    [key in ComplaintStatus]: number;
+  };
+  totalCompensation: number;
+  compensationByStatus: {
+    [key in ComplaintStatus]: number;
+  };
+  period: {
+    year?: number;
+    month?: number;
+  };
+}
+
+interface StatsQueryParams {
+  year?: number;
+  month?: number;
+  status?: ComplaintStatus;
+  userId?: string;
+}
+
 export const createComplaints = async (
   complaints: CreateComplaintData[]
 ): Promise<BulkCreateResponse> => {
@@ -231,6 +253,36 @@ export const bulkUpdateComplaintStatus = async (
 
   if (!response.ok) {
     throw new Error("Failed to bulk update complaint status");
+  }
+
+  return response.json();
+};
+
+export const getComplaintsStats = async (
+  params: StatsQueryParams = {}
+): Promise<ComplaintStats> => {
+  const token = localStorage.getItem("token");
+  const queryParams = new URLSearchParams();
+
+  // Add all provided parameters to query string
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, value.toString());
+    }
+  });
+
+  const response = await fetch(
+    `${API_BASE_URL}/complaints/stats?${queryParams.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch complaints stats");
   }
 
   return response.json();

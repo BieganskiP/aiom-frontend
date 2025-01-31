@@ -29,7 +29,7 @@ export function PaidPerStopModal({
   const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

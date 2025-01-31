@@ -74,7 +74,7 @@ export const RegionEditModal = ({
     }
   }, [isOpen, region, reset]);
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   if (!isOpen) return null;
 

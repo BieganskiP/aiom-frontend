@@ -22,7 +22,7 @@ export const UserDetailsModal = ({
   const canViewSensitiveInfo =
     currentUser?.role === "admin" || currentUser?.role === "owner";
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   if (!isOpen) return null;
 

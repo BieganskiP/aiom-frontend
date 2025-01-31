@@ -33,7 +33,7 @@ export const EventModal = ({ isOpen, onClose, onSuccess }: EventModalProps) => {
     },
   });
 
-  useClickOutside(modalRef, onClose);
+  useClickOutside(modalRef as React.RefObject<HTMLElement>, onClose);
 
   const onSubmit = async (data: EventFormData) => {
     try {
