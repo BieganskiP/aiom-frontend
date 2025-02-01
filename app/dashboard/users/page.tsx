@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { User } from "@/types";
 import { getUsers } from "@/services/users";
-import { Button } from "@/components/atoms/Button";
-import { UsersList } from "@/components/molecules/UsersList";
-import { InviteUserModal } from "@/components/molecules/InviteUserModal";
+import { Button } from "@/components/atoms/buttons/Button";
+import { UsersList } from "@/components/molecules/tables/UsersList";
+import { InviteUserModal } from "@/components/molecules/modals/InviteUserModal";
 import { Plus } from "lucide-react";
-import PageHeader from "@/components/atoms/PageHeader";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);

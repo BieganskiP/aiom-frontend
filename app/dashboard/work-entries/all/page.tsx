@@ -6,11 +6,11 @@ import { getAllWorkEntries } from "@/services/workEntries";
 import { getUsers } from "@/services/users";
 import { getRoutes } from "@/services/routes";
 import { getCars } from "@/services/cars";
-import { WorkEntriesList } from "@/components/molecules/WorkEntriesList";
-import { Button } from "@/components/atoms/Button";
+import { WorkEntriesList } from "@/components/molecules/tables/WorkEntriesList";
+import { Button } from "@/components/atoms/buttons/Button";
 import { Plus } from "lucide-react";
-import { WorkEntryModal } from "@/components/molecules/WorkEntryModal";
-import PageHeader from "@/components/atoms/PageHeader";
+import { WorkEntryModal } from "@/components/molecules/modals/WorkEntryModal";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 export default function AllWorkEntriesPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);

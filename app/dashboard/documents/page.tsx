@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { File as CustomFile } from "@/types";
-import { Button } from "@/components/atoms/Button";
+import { Button } from "@/components/atoms/buttons/Button";
 import { Download, Trash2, Image, FileText } from "lucide-react";
 import {
   getFiles,
@@ -11,8 +11,8 @@ import {
   uploadImage,
   uploadPdf,
 } from "@/services/files";
-import { TableWrapper } from "@/components/atoms/TableWrapper";
-import PageHeader from "@/components/atoms/PageHeader";
+import { TableWrapper } from "@/components/atoms/layout/TableWrapper";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 export default function DocumentsPage() {
   const [files, setFiles] = useState<CustomFile[]>([]);

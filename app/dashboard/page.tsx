@@ -22,7 +22,7 @@ import { format, eachDayOfInterval, startOfMonth, endOfMonth } from "date-fns";
 import { pl } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
-import PageHeader from "@/components/atoms/PageHeader";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 

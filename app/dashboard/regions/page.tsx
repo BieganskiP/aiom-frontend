@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { Region } from "@/types";
 import { getRegions, getMyRegions } from "@/services/regions";
-import { Button } from "@/components/atoms/Button";
-import { RegionsList } from "@/components/molecules/RegionsList";
-import { RegionEditModal } from "@/components/molecules/RegionEditModal";
+import { Button } from "@/components/atoms/buttons/Button";
+import { RegionsList } from "@/components/molecules/tables/RegionsList";
+import { RegionEditModal } from "@/components/molecules/modals/RegionEditModal";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import PageHeader from "@/components/atoms/PageHeader";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 export default function RegionsPage() {
   const { user } = useAuth();

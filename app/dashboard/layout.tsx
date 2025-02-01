@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components/molecules/Sidebar";
+import { Sidebar } from "@/components/molecules/navigation/Sidebar";
 
 export default function DashboardLayout({
   children,

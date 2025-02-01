@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ComplaintsList from "@/components/molecules/ComplaintsList";
+import ComplaintsList from "@/components/molecules/tables/ComplaintsList";
 import { getComplaintsStats } from "@/services/complaints";
 import { ComplaintStatus } from "@/types";
 import { Calendar } from "lucide-react";

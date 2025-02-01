@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { fetchUserProfile } from "@/services/auth";
 import { usePathname } from "next/navigation";
 import { User } from "@/types";
-import { LoadingScreen } from "@/components/atoms/LoadingScreen";
+import { LoadingScreen } from "@/components/atoms/layout/LoadingScreen";
 import Cookies from "js-cookie";
 
 interface AuthContextType {

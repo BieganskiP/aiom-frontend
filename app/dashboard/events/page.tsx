@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { Event } from "@/types";
 import { getEvents } from "@/services/events";
-import { EventsTable } from "@/components/molecules/EventsTable";
-import { EventModal } from "@/components/molecules/EventModal";
-import { Button } from "@/components/atoms/Button";
+import { EventsTable } from "@/components/molecules/tables/EventsTable";
+import { EventModal } from "@/components/molecules/modals/EventModal";
+import { Button } from "@/components/atoms/buttons/Button";
 import { Plus } from "lucide-react";
 
 export default function EventsPage() {
@@ -48,11 +48,7 @@ export default function EventsPage() {
         </div>
       )}
 
-      <EventsTable
-        events={events}
-        onUpdate={fetchEvents}
-        loading={loading}
-      />
+      <EventsTable events={events} onUpdate={fetchEvents} loading={loading} />
 
       <EventModal
         isOpen={isModalOpen}
@@ -61,4 +57,4 @@ export default function EventsPage() {
       />
     </div>
   );
-} 
+}

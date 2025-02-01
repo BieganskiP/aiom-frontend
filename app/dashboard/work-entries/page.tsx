@@ -3,10 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { WorkEntry } from "@/types";
 import { getMyWorkEntries } from "@/services/workEntries";
-import { WorkEntriesList } from "@/components/molecules/WorkEntriesList";
-import { Button } from "@/components/atoms/Button";
-import { WorkEntryModal } from "@/components/molecules/WorkEntryModal";
-import PageHeader from "@/components/atoms/PageHeader";
+import { WorkEntriesList } from "@/components/molecules/tables/WorkEntriesList";
+import { Button } from "@/components/atoms/buttons/Button";
+import { WorkEntryModal } from "@/components/molecules/modals/WorkEntryModal";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 export default function WorkEntriesPage() {
   const [entries, setEntries] = useState<WorkEntry[]>([]);

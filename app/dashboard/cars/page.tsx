@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { Car } from "@/types";
 import { getCars } from "@/services/cars";
 import { getSettings } from "@/services/settings";
-import { Button } from "@/components/atoms/Button";
-import { CarsList } from "@/components/molecules/CarsList";
-import { CarModal } from "@/components/molecules/CarModal";
+import { Button } from "@/components/atoms/buttons/Button";
+
+import { CarsList } from "@/components/molecules/tables/CarsList";
+import { CarModal } from "@/components/molecules/modals/CarModal";
 import { Plus } from "lucide-react";
 import { SettingKey } from "@/types/settings";
-import PageHeader from "@/components/atoms/PageHeader";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 interface CompanyNames {
   parent: string;

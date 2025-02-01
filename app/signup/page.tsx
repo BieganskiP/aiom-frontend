@@ -1,6 +1,6 @@
 "use client";
 
-import { SignupForm } from "@/components/molecules/SignupForm";
+import { SignupForm } from "@/components/molecules/forms/SignupForm";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 

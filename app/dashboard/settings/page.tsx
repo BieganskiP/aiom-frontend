@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ProfileForm } from "@/components/molecules/ProfileForm";
-import { PasswordForm } from "@/components/molecules/PasswordForm";
-import { SettingsForm } from "@/components/molecules/SettingsForm";
+import { ProfileForm } from "@/components/molecules/forms/ProfileForm";
+import { PasswordForm } from "@/components/molecules/forms/PasswordForm";
+import { SettingsForm } from "@/components/molecules/forms/SettingsForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/types";
 import { getSettings } from "@/services/settings";
 import type { Setting } from "@/types/settings";
-import PageHeader from "@/components/atoms/PageHeader";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 type Tab = "profile" | "password" | "company";
 

@@ -1,6 +1,6 @@
-import PageHeader from "@/components/atoms/PageHeader";
-import ComplaintsUpload from "@/components/molecules/ComplaintsUpload";
-import ComplaintsList from "@/components/molecules/ComplaintsList";
+import PageHeader from "@/components/atoms/layout/PageHeader";
+import ComplaintsUpload from "@/components/molecules/forms/ComplaintsUpload";
+import ComplaintsList from "@/components/molecules/tables/ComplaintsList";
 
 export default async function page() {
   return (

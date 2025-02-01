@@ -1,8 +1,8 @@
 "use client";
 
 import { getRoutesLists } from "@/services/routesLists";
-import PageHeader from "@/components/atoms/PageHeader";
-import RouteListsTable from "@/components/molecules/RouteListsTable";
+import PageHeader from "@/components/atoms/layout/PageHeader";
+import RouteListsTable from "@/components/molecules/tables/RouteListsTable";
 import { useEffect, useState } from "react";
 import { RoutesList } from "@/types";
 import {

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { Route } from "@/types";
 import { getRoutes } from "@/services/routes";
 import { getMyRegions } from "@/services/regions";
-import { Button } from "@/components/atoms/Button";
-import { RoutesList } from "@/components/molecules/RoutesList";
-import { RouteModal } from "@/components/molecules/RouteModal";
+import { Button } from "@/components/atoms/buttons/Button";
+import { RoutesList } from "@/components/molecules/tables/RoutesList";
+import { RouteModal } from "@/components/molecules/modals/RouteModal";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import PageHeader from "@/components/atoms/PageHeader";
+import PageHeader from "@/components/atoms/layout/PageHeader";
 
 export default function RoutesPage() {
   const { user } = useAuth();
