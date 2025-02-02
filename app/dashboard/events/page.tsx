@@ -6,7 +6,6 @@ import { getEvents } from "@/services/events";
 import { EventsTable } from "@/components/molecules/tables/EventsTable";
 import { EventModal } from "@/components/molecules/modals/EventModal";
 import { Button } from "@/components/atoms/buttons/Button";
-import { Plus } from "lucide-react";
 
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -36,8 +35,11 @@ export default function EventsPage() {
     <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-foreground">Wydarzenia</h1>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          size="sm"
+          className="whitespace-nowrap"
+        >
           Dodaj wydarzenie
         </Button>
       </div>

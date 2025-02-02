@@ -23,8 +23,9 @@ import { pl } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import PageHeader from "@/components/atoms/layout/PageHeader";
+import { Clock, MapPin, Truck, Wallet, Building2 } from "lucide-react";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EC4899", "#8B5CF6"];
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -204,44 +205,77 @@ export default function DashboardPage() {
 
       {/* Personal Statistics Section */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Twoje statystyki</h2>
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Truck className="w-6 h-6 text-primary-500" />
+          Twoje statystyki
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-bg-800 p-6 rounded-lg">
-            <h3 className="text-sm font-medium text-neutral-400 mb-2">
-              Łączna liczba przystanków
-            </h3>
-            <p className="text-3xl font-bold text-foreground">
-              {personalTotalStops}
+          <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                  Przystanki
+                </h3>
+                <p className="text-3xl font-bold text-foreground">
+                  {personalTotalStops}
+                </p>
+              </div>
+              <MapPin className="w-6 h-6 text-primary-500" />
+            </div>
+            <p className="text-sm text-neutral-500 mt-2">
+              Średnio {personalAverageStopsPerDay} dziennie
             </p>
           </div>
-          <div className="bg-bg-800 p-6 rounded-lg">
-            <h3 className="text-sm font-medium text-neutral-400 mb-2">
-              Średnia dzienna
-            </h3>
-            <p className="text-3xl font-bold text-foreground">
-              {personalAverageStopsPerDay}
-            </p>
+
+          <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                  Przychód
+                </h3>
+                <p className="text-3xl font-bold text-foreground">
+                  {personalTotalRevenue.toFixed(2)} zł
+                </p>
+              </div>
+              <Wallet className="w-6 h-6 text-accent-500" />
+            </div>
+            <p className="text-sm text-neutral-500 mt-2">W tym miesiącu</p>
           </div>
-          <div className="bg-bg-800 p-6 rounded-lg">
-            <h3 className="text-sm font-medium text-neutral-400 mb-2">
-              Przychód
-            </h3>
-            <p className="text-3xl font-bold text-foreground">
-              {personalTotalRevenue.toFixed(2)} zł
-            </p>
+
+          <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                  Wypłata
+                </h3>
+                <p className="text-3xl font-bold text-foreground">
+                  {personalTotalPay.toFixed(2)} zł
+                </p>
+              </div>
+              <Wallet className="w-6 h-6 text-primary-500" />
+            </div>
+            <p className="text-sm text-neutral-500 mt-2">Do wypłaty</p>
           </div>
-          <div className="bg-bg-800 p-6 rounded-lg">
-            <h3 className="text-sm font-medium text-neutral-400 mb-2">
-              Wypłata
-            </h3>
-            <p className="text-3xl font-bold text-foreground">
-              {personalTotalPay.toFixed(2)} zł
-            </p>
+
+          <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                  Czas pracy
+                </h3>
+                <p className="text-3xl font-bold text-foreground">
+                  {personalEntries.length} dni
+                </p>
+              </div>
+              <Clock className="w-6 h-6 text-accent-500" />
+            </div>
+            <p className="text-sm text-neutral-500 mt-2">W tym miesiącu</p>
           </div>
         </div>
 
-        <div className="mt-6 bg-bg-800 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">
+        <div className="mt-6 bg-bg-800 p-6 rounded-lg border border-bg-700">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-primary-500" />
             Twoje dzienne statystyki
           </h3>
           <div className="h-[300px]">
@@ -257,8 +291,9 @@ export default function DashboardPage() {
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#1F2937",
-                    border: "none",
+                    border: "1px solid #374151",
                     borderRadius: "0.5rem",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                   }}
                   labelStyle={{ color: "#9CA3AF" }}
                 />
@@ -266,21 +301,21 @@ export default function DashboardPage() {
                   type="monotone"
                   dataKey="stops"
                   name="Przystanki"
-                  stroke="#3B82F6"
+                  stroke={COLORS[0]}
                   strokeWidth={2}
                 />
                 <Line
                   type="monotone"
                   dataKey="revenue"
                   name="Przychód"
-                  stroke="#10B981"
+                  stroke={COLORS[1]}
                   strokeWidth={2}
                 />
                 <Line
                   type="monotone"
                   dataKey="pay"
                   name="Wypłata"
-                  stroke="#F59E0B"
+                  stroke={COLORS[2]}
                   strokeWidth={2}
                 />
               </LineChart>
@@ -292,106 +327,88 @@ export default function DashboardPage() {
       {/* Managed Statistics Section */}
       {(isAdmin || isLeader) && (
         <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-4">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <Building2 className="w-6 h-6 text-primary-500" />
             {isAdmin ? "Statystyki firmy" : "Statystyki regionu"}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-bg-800 p-6 rounded-lg">
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">
-                Łączna liczba przystanków
-              </h3>
-              <p className="text-3xl font-bold text-foreground">
-                {managedTotalStops}
+            <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                    Łączne przystanki
+                  </h3>
+                  <p className="text-3xl font-bold text-foreground">
+                    {managedTotalStops}
+                  </p>
+                </div>
+                <MapPin className="w-6 h-6 text-primary-500" />
+              </div>
+              <p className="text-sm text-neutral-500 mt-2">
+                Średnio {managedAverageStopsPerDay} dziennie
               </p>
             </div>
-            <div className="bg-bg-800 p-6 rounded-lg">
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">
-                Średnia dzienna
-              </h3>
-              <p className="text-3xl font-bold text-foreground">
-                {managedAverageStopsPerDay}
-              </p>
+
+            <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                    Przychód
+                  </h3>
+                  <p className="text-3xl font-bold text-foreground">
+                    {managedTotalRevenue.toFixed(2)} zł
+                  </p>
+                </div>
+                <Wallet className="w-6 h-6 text-accent-500" />
+              </div>
+              <p className="text-sm text-neutral-500 mt-2">W tym miesiącu</p>
             </div>
-            <div className="bg-bg-800 p-6 rounded-lg">
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">
-                Przychód
-              </h3>
-              <p className="text-3xl font-bold text-foreground">
-                {managedTotalRevenue.toFixed(2)} zł
-              </p>
+
+            <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                    Zysk firmy
+                  </h3>
+                  <p className="text-3xl font-bold text-foreground">
+                    {managedTotalProfit.toFixed(2)} zł
+                  </p>
+                </div>
+                <Wallet className="w-6 h-6 text-primary-500" />
+              </div>
+              <p className="text-sm text-neutral-500 mt-2">Do rozliczenia</p>
             </div>
-            <div className="bg-bg-800 p-6 rounded-lg">
-              <h3 className="text-sm font-medium text-neutral-400 mb-2">
-                Zysk firmy
-              </h3>
-              <p className="text-3xl font-bold text-foreground">
-                {managedTotalProfit.toFixed(2)} zł
-              </p>
+
+            <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-sm font-medium text-neutral-400 mb-2">
+                    Aktywni kierowcy
+                  </h3>
+                  <p className="text-3xl font-bold text-foreground">
+                    {userPerformanceData.length}
+                  </p>
+                </div>
+                <Truck className="w-6 h-6 text-accent-500" />
+              </div>
+              <p className="text-sm text-neutral-500 mt-2">W tym miesiącu</p>
             </div>
           </div>
 
-          <div className="mt-6 bg-bg-800 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4">
-              {isAdmin
-                ? "Dzienne statystyki firmy"
-                : "Dzienne statystyki regionu"}
-            </h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={managedDailyStatsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis
-                    dataKey="date"
-                    stroke="#9CA3AF"
-                    tick={{ fill: "#9CA3AF" }}
-                  />
-                  <YAxis stroke="#9CA3AF" tick={{ fill: "#9CA3AF" }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1F2937",
-                      border: "none",
-                      borderRadius: "0.5rem",
-                    }}
-                    labelStyle={{ color: "#9CA3AF" }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="stops"
-                    name="Przystanki"
-                    stroke="#3B82F6"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="revenue"
-                    name="Przychód"
-                    stroke="#10B981"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="profit"
-                    name="Zysk"
-                    stroke="#EC4899"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* User Performance Chart (admin/owner only) */}
-          {isAdmin && userPerformanceData.length > 0 && (
-            <div className="mt-6 bg-bg-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">
-                Wydajność kierowców
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-primary-500" />
+                {isAdmin
+                  ? "Dzienne statystyki firmy"
+                  : "Dzienne statystyki regionu"}
               </h3>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={userPerformanceData}>
+                  <LineChart data={managedDailyStatsData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis
-                      dataKey="name"
+                      dataKey="date"
                       stroke="#9CA3AF"
                       tick={{ fill: "#9CA3AF" }}
                     />
@@ -399,56 +416,111 @@ export default function DashboardPage() {
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "#1F2937",
-                        border: "none",
+                        border: "1px solid #374151",
                         borderRadius: "0.5rem",
+                        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                       }}
                       labelStyle={{ color: "#9CA3AF" }}
                     />
-                    <Bar dataKey="stops" name="Przystanki" fill="#3B82F6" />
-                  </BarChart>
+                    <Line
+                      type="monotone"
+                      dataKey="stops"
+                      name="Przystanki"
+                      stroke={COLORS[0]}
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="revenue"
+                      name="Przychód"
+                      stroke={COLORS[1]}
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="profit"
+                      name="Zysk"
+                      stroke={COLORS[2]}
+                      strokeWidth={2}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
-          )}
 
-          {/* Routes Distribution Chart */}
-          {routesData.length > 0 && (
-            <div className="mt-6 bg-bg-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">
-                Rozkład przystanków na trasach
-              </h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={routesData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      label={(entry) => entry.name}
-                    >
-                      {routesData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1F2937",
-                        border: "none",
-                        borderRadius: "0.5rem",
-                      }}
-                      labelStyle={{ color: "#9CA3AF" }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+            {routesData.length > 0 && (
+              <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary-500" />
+                  Rozkład przystanków na trasach
+                </h3>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={routesData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label={(entry) => entry.name}
+                      >
+                        {routesData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          borderRadius: "0.5rem",
+                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        }}
+                        labelStyle={{ color: "#9CA3AF" }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* User Performance Chart (admin/owner only) */}
+            {isAdmin && userPerformanceData.length > 0 && (
+              <div className="bg-bg-800 p-6 rounded-lg border border-bg-700">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-primary-500" />
+                  Wydajność kierowców
+                </h3>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={userPerformanceData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis
+                        dataKey="name"
+                        stroke="#9CA3AF"
+                        tick={{ fill: "#9CA3AF" }}
+                      />
+                      <YAxis stroke="#9CA3AF" tick={{ fill: "#9CA3AF" }} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          borderRadius: "0.5rem",
+                          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                        }}
+                        labelStyle={{ color: "#9CA3AF" }}
+                      />
+                      <Bar dataKey="stops" name="Przystanki" fill={COLORS[0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
