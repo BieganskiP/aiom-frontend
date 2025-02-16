@@ -16,6 +16,7 @@ import {
   BadgeCheck,
   Wallet,
   UserCog,
+  List,
 } from "lucide-react";
 import { Nav, NavItem } from "./Nav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -120,6 +121,11 @@ export const Sidebar = () => {
               Reklamacje
             </NavItem>
 
+            <NavItem href="/dashboard/user-lists" onClick={closeSidebar}>
+              <List size={20} />
+              Moje listy
+            </NavItem>
+
             {/* Leader Section */}
             {hasLeaderAccess && (
               <>
@@ -171,7 +177,7 @@ export const Sidebar = () => {
 
                 <NavItem href="/dashboard/lists" onClick={closeSidebar}>
                   <Wallet size={20} />
-                  Rozliczenia
+                  Listy
                 </NavItem>
 
                 <NavItem
