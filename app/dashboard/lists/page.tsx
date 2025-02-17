@@ -18,23 +18,31 @@ import {
   CartesianGrid,
 } from "recharts";
 import { Calendar } from "lucide-react";
-import { format, startOfMonth, endOfMonth, isWithinInterval } from "date-fns";
+import { format, getDate } from "date-fns";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 export default function Lists() {
   const [routesLists, setRoutesLists] = useState<RoutesList[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState(
-    format(new Date(), "yyyy-MM")
-  );
-  const [selectedRoute, setSelectedRoute] = useState<string>("");
+  const [filters, setFilters] = useState({
+    month: format(new Date(), "MM"),
+    year: format(new Date(), "yyyy"),
+    period:
+      getDate(new Date()) <= 15 ? ("first" as const) : ("second" as const),
+    route: "",
+    date: "",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getRoutesLists();
+        const data = await getRoutesLists({
+          period: filters.period,
+          month: filters.month,
+          year: filters.year,
+        });
         setRoutesLists(data);
       } catch (error) {
         console.error("Failed to fetch routes lists:", error);
@@ -44,20 +52,15 @@ export default function Lists() {
     };
 
     fetchData();
-  }, []);
+  }, [filters.period, filters.month, filters.year]);
 
-  // Filter routes by selected month and route
+  // Filter routes by selected route and date (if any)
   const filteredRoutes = routesLists.filter((route) => {
-    const routeDate = new Date(route.date);
-    const monthStart = startOfMonth(new Date(selectedMonth));
-    const monthEnd = endOfMonth(new Date(selectedMonth));
-    const dateMatches = isWithinInterval(routeDate, {
-      start: monthStart,
-      end: monthEnd,
-    });
-    return selectedRoute
-      ? dateMatches && route.route === selectedRoute
-      : dateMatches;
+    const routeMatches = !filters.route || route.route === filters.route;
+    const dateMatches =
+      !filters.date ||
+      format(new Date(route.date), "yyyy-MM-dd") === filters.date;
+    return routeMatches && dateMatches;
   });
 
   // Calculate statistics based on filtered routes
@@ -104,29 +107,31 @@ export default function Lists() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-0">
         <PageHeader title="Listy" />
         <div className="flex gap-4">
+          <select
+            value={filters.period}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                period: e.target.value as "first" | "second",
+              }))
+            }
+            className="px-4 py-2 bg-bg-800 border border-bg-700 rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="first">Pierwsza połowa</option>
+            <option value="second">Druga połowa</option>
+          </select>
           <div className="relative">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 stroke-white" />
             <input
               type="month"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+              value={`${filters.year}-${filters.month}`}
+              onChange={(e) => {
+                const [year, month] = e.target.value.split("-");
+                setFilters((prev) => ({ ...prev, year, month }));
+              }}
               className="pl-10 pr-4 py-2 bg-bg-800 border border-bg-700 rounded-lg text-sm text-foreground placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-          <select
-            value={selectedRoute}
-            onChange={(e) => setSelectedRoute(e.target.value)}
-            className="px-4 py-2 bg-bg-800 border border-bg-700 rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="">Wszystkie trasy</option>
-            {[...new Set(routesLists.map((route) => route.route))]
-              .sort()
-              .map((route) => (
-                <option key={route} value={route}>
-                  {route}
-                </option>
-              ))}
-          </select>
         </div>
       </div>
 
@@ -134,16 +139,16 @@ export default function Lists() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-bg-800 p-6 rounded-lg">
           <h3 className="text-sm font-medium text-neutral-400 mb-2">
-            {selectedRoute
-              ? `Przystanki - ${selectedRoute}`
+            {filters.route
+              ? `Przystanki - ${filters.route}`
               : "Łączna liczba przystanków"}
           </h3>
           <p className="text-3xl font-bold text-foreground">{totalStops}</p>
         </div>
         <div className="bg-bg-800 p-6 rounded-lg">
           <h3 className="text-sm font-medium text-neutral-400 mb-2">
-            {selectedRoute
-              ? `Paczki - ${selectedRoute}`
+            {filters.route
+              ? `Paczki - ${filters.route}`
               : "Łączna liczba paczek"}
           </h3>
           <p className="text-3xl font-bold text-foreground">{totalPackages}</p>
